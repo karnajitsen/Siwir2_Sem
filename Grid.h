@@ -44,13 +44,13 @@ public:
             for (int j = 0.0; (size_t)j < sizeX; j++)
             {
                 double k = -1.0 + j*hx;
-                data[j] = gxy1(k, -1.0);
-                data[j*ld] = gxy1(-1.0, k);
-                data[j + ld * (sizeX - 1)] = gxy1(k, l);
-                data[j * ld + (sizeX - 1)] = gxy1(l, k);
+                data[j] = gxy(k, -1.0);
+                data[j*ld] = gxy(-1.0, k);
+                data[j + ld * (sizeX - 1)] = gxy(k, l);
+                data[j * ld + (sizeX - 1)] = gxy(l, k);
 				if (k == 0.0)
 				{
-					data[j + ld * (sizeX - 1)/2] = gxy1(k, 0);
+					data[j + ld * (sizeX - 1)/2] = gxy(k, 0);
 				}
 
             }
@@ -67,7 +67,7 @@ public:
     inline double gxy(const double x, const double y)
     {
 		double r = sqrt(sqrt(x*x + y*y));
-		double theta = atan(t / x);
+		double theta = atan(y / x);
 		return r*sin(theta/2);
     }
 

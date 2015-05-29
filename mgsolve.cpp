@@ -92,7 +92,7 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
     double	center = (2.0 * alpha) + (2.0 * beta);
 
 
-    Grid tmpgrd(xlen + 1, ylen + 1, hx, hy, false,true);
+    Grid tmpgrd(xlen + 1, ylen + 1, hx, hy, false);
     for (size_t i = 1; i < ylen; i++)
     {
         for (size_t j = 1; j < xlen; j++)
@@ -129,7 +129,7 @@ inline void interpolate(Grid * srcgrd, Grid * tgtgrd)
     size_t len = (*srcgrd).getXsize() - 1;
     size_t txlen = (*tgtgrd).getXsize();
     double hx = (*tgtgrd).getHx();
-    Grid tmpgrd(txlen, txlen, hx, hx, false,true);
+    Grid tmpgrd(txlen, txlen, hx, hx, false);
 
 
     for (size_t j = 0; j < len; j++)
@@ -226,7 +226,7 @@ void mgsolve(size_t level, size_t vcycle)
     {
         for (size_t j = 0; j < gdim; j++)
         {
-           (*sGrid)(j, i) = (*sGrid).gxy1(j*hsize, i*hsize);
+           (*sGrid)(j, i) = (*sGrid).gxy(-1.0+j*hsize, -1.0+i*hsize);
         }
     }
 
@@ -282,7 +282,7 @@ int main(int argc, char** argv)
     std::cout << "\n\n =============== Output for Dirichlet Boundary Value Problem 1 ===================\n\n";
 
     gettimeofday(&start, 0);
-    isNeumann = false;
+    //isNeumann = false;
     mgsolve(level, vcycle);
 
     gettimeofday(&end, 0);
