@@ -2,9 +2,9 @@
 #include<iostream>
 #include<fstream>
 #include <sys/time.h>
-#define XDOMLOW 0.0
+#define XDOMLOW -1.0
 #define XDOMHIGH 1.0
-#define YDOMLOW 0.0
+#define YDOMLOW -1.0
 #define YDOMHIGH 1.0
 #define TOLERR 0.00001
 #define V1 2
@@ -13,7 +13,7 @@
 Grid ** xGrids = nullptr;
 Grid ** fGrids = nullptr;
 Grid *sGrid = nullptr;
-bool isNeumann = false;
+//bool isNeumann = false;
 
 void init(double hsize, const size_t level)
 {
@@ -25,26 +25,15 @@ void init(double hsize, const size_t level)
     fGrids = (Grid**) memalign(ALLIGNMENT, level*sizeof(Grid*));
     for (size_t i = 0; i < level; i++)
     {
-        xGrids[i] = new Grid(xdim, ydim, hsize, hsize, flag, isNeumann);
-        fGrids[i] = new Grid(xdim, ydim, hsize, hsize, false, isNeumann);
+        xGrids[i] = new Grid(xdim, ydim, hsize, hsize, flag);
+        fGrids[i] = new Grid(xdim, ydim, hsize, hsize, false);
         ydim = pow(2, --je) + 1;
         xdim = ydim;
         hsize *= 2.0;
         flag = false;
     }
 
-    if(isNeumann)
-    {
-    for (size_t i = 1; i < (*fGrids[0]).getYsize()-1; i++)
-    {
-        //(*fGrids[0])(0, i) = 1.0;
-        //(*fGrids[0])((*fGrids[0]).getXsize() - 1, i) = 1.0;
-        for (size_t j = 1; j < (*fGrids[0]).getXsize(); j++)
-        {
-            (*fGrids[0])(j, i) = 2.0;
-        }
-    }
-    }
+    
 }
 
 
@@ -57,6 +46,8 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
     double	alpha = 1.0;
     double	beta = 1.0;
     double	center = 1.0 / (2.0 * alpha + 2.0 * beta);
+	size_t midY = (dimY - 1) / 2;
+	size_t midX = (dimX - 1) / 2;
 
     for (size_t i = 0; i < iter; i++)
     {
@@ -65,38 +56,27 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
             size_t l = ((j + 1) & 0x1) + 1;
             for (size_t k = l; k < dimX - 1; k += 2)
             {
+				if (j == midY && k >= midX)
+					continue;
                 (*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + alpha * ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + beta * ((*xgrd)(k, j + 1)
                     + (*xgrd)(k, j - 1))) * center;
 
             }
 
-            if (isNeumann && l == 1 && xgrd == xGrids[0])
-            {
-                (*xgrd)(0, j) = -hx + (*xgrd)(1, j);
-                (*xgrd)(dimX - 1, j) = -hx + (*xgrd)(dimX - 2, j);
-
-            }
-
-        }
+         }
 
         for (size_t j = 1; j < dimY - 1; j++)
         {
             size_t l = (j & 0x1) + 1;
             for (size_t k = l; k < dimX - 1; k += 2)
             {
-                (*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + alpha * ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + beta * ((*xgrd)(k, j + 1)
+				if (j == midY && k >= midX)
+					continue;
+				(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + alpha * ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + beta * ((*xgrd)(k, j + 1)
                     + (*xgrd)(k, j - 1))) * center;
 
 
             }
-
-            if (isNeumann && l == 1 && xgrd == xGrids[0])
-            {
-                (*xgrd)(0, j) = -hx + (*xgrd)(1, j);
-                (*xgrd)(dimX - 1, j) = -hx + (*xgrd)(dimX - 2, j);
-
-            }
-
         }
     }
 }
@@ -240,16 +220,13 @@ void mgsolve(size_t level, size_t vcycle)
     double hsize = (XDOMHIGH - XDOMLOW) / (gdim - 1.0);
 
     init(hsize, level);
-    sGrid = new Grid(gdim, gdim, hsize, hsize, true, isNeumann);
+    sGrid = new Grid(gdim, gdim, hsize, hsize, true);
 
     for (size_t i = 0; i < gdim; i++)
     {
         for (size_t j = 0; j < gdim; j++)
         {
-            if (isNeumann)
-            (*sGrid)(j, i) = (*sGrid).gxy2(j*hsize);
-            else
-            (*sGrid)(j, i) = (*sGrid).gxy1(j*hsize, i*hsize);
+           (*sGrid)(j, i) = (*sGrid).gxy1(j*hsize, i*hsize);
         }
     }
 
@@ -274,23 +251,14 @@ void mgsolve(size_t level, size_t vcycle)
         if (oldnorm != 0.0)
             convrate = newnorm / oldnorm;
 
-        if (isNeumann)
-        {
-            std::cout << "Neumann:: Residual L2 Norm after " << i  << " V-Cycle = " << newnorm << "\n";
-            std::cout << "Neumann:: Covergence rate after " << i << " V-Cycle = " << convrate << "\n\n";
-        }
-        else
-        {
             std::cout << "Dirichlet:: Residual L2 Norm after " << i << " V-Cycle = " << newnorm << "\n";
             std::cout << "Dirichlet:: Covergence rate after " << i << " V-Cycle = " << convrate << "\n\n";
-        }
+       
 
     }
     //orthogonalize(xGrids[0]);
     errorNorm(xGrids[0], sGrid, &newnorm);
-    if (isNeumann)
-    std::cout << "Neumann:: Error L2 Norm for h as 1/" << gdim - 1 << " = " << newnorm << "\n\n";
-    else
+    
     std::cout << "Dirichlet:: Error L2 Norm for h as 1/" << gdim - 1 << " = " << newnorm << "\n\n";
 }
 
@@ -341,37 +309,5 @@ int main(int argc, char** argv)
     fOutsolt1.close();
     std::cout << "\n\n =============== Dirichlet Boundary Value Problem 1 ends here ===================\n\n";
 
-    std::cout << "\n\n =============== Output for Neumann Boundary Value Problem 2 ===================\n\n";
-    delete xGrids;
-    delete fGrids;
-    delete sGrid;
-    isNeumann = true;
-    gettimeofday(&start, 0);
-    mgsolve(level, vcycle);
-    gettimeofday(&end, 0);
-
-    elapsed = 0.000001 * ((double)((end.tv_sec - start.tv_sec) * 1000000 + end.tv_usec - start.tv_usec));
-    std::cout << "Neumann:: Time spend for Multigrid Solver = " << elapsed << "\n";
-
-    hsize = (*xGrids[0]).getHx();
-    gdim = (*xGrids[0]).getXsize();
-
-    std::string fname2 = std::string("data/Neumann/solution_h_") + std::string(to_string(gdim - 1)) + std::string(".txt");
-    std::ofstream	fOut2(fname2);
-    std::string fnames2 = std::string("data/Neumann/exactsolution_h_") + std::string(to_string(gdim - 1)) + std::string(".txt");
-    std::ofstream	fOutsolt2(fnames2);
-    for (size_t y = 0.0; y < gdim; ++y) {
-    for (size_t x = 0.0; x < gdim; ++x) {
-
-    fOut2 << x*hsize << "\t" << y*hsize << "\t" << (*xGrids[0])(x, y) << std::endl;
-    fOutsolt2 << x*hsize << "\t" << y*hsize << "\t" << (*sGrid)(x, y) << std::endl;
-    }
-    fOut2 << std::endl;
-    fOutsolt2 << std::endl;
-    }
-    fOut2.close();
-    fOutsolt2.close();
-
-    std::cout << "\n\n =============== Neumann Bounday Value Problem 2 ends here ===================\n\n";
     return 0;
 }

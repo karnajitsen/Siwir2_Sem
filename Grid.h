@@ -28,7 +28,7 @@ public:
         hy = 0.0;
     }
 
-    explicit Grid(const size_t x, const size_t y, const double& _hx, const double& _hy , bool bndrYN , bool isNeumann)
+    explicit Grid(const size_t x, const size_t y, const double& _hx, const double& _hy , bool bndrYN)
     {
         sizeX = x;
         sizeY = y;
@@ -38,29 +38,25 @@ public:
         totLength = (x - 2)*(y - 2);
         data = (double*) memalign(ALLIGNMENT, ld*y*sizeof(double));
         //data = (double*) _aligned_malloc(ld*y*sizeof(double), ALLIGNMENT);
-        if (bndrYN && !isNeumann)
+        if (bndrYN)
         {
-            double l = (sizeX - 1.0)*hx;
+            double l = - 1.0 + (sizeX - 1.0)*hx;
             for (int j = 0.0; (size_t)j < sizeX; j++)
             {
-                double k = j*hx;
-                data[j] = gxy1(k, 0.0);
-                data[j*ld] = gxy1(0.0, k);
+                double k = -1.0 + j*hx;
+                data[j] = gxy1(k, -1.0);
+                data[j*ld] = gxy1(-1.0, k);
                 data[j + ld * (sizeX - 1)] = gxy1(k, l);
                 data[j * ld + (sizeX - 1)] = gxy1(l, k);
+				if (k == 0.0)
+				{
+					data[j + ld * (sizeX - 1)/2] = gxy1(k, 0);
+				}
+
             }
         }
 
-        if (bndrYN && isNeumann)
-        {
-            for (int j = 0.0; (size_t)j < sizeX; j++)
-            {
-                double k = j*hx;
-                data[j] = gxy2(k);
-                data[j + ld * (sizeX - 1)] = gxy2(k);
-            }
-        }
-        //data++;
+          //data++;
     }
     ~Grid()
     {
@@ -68,14 +64,11 @@ public:
         free(data);
     }
 
-    inline double gxy1(const double x, const double y)
+    inline double gxy(const double x, const double y)
     {
-        return sin(M_PI * x) * sinh(M_PI * y);
-    }
-
-    inline double gxy2(const double x)
-    {
-        return (x * (1.0 - x));
+		double r = sqrt(sqrt(x*x + y*y));
+		double theta = atan(t / x);
+		return r*sin(theta/2);
     }
 
     inline void reset()
