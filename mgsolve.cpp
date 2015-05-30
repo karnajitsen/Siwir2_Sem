@@ -164,7 +164,7 @@ inline void interpolate(Grid * srcgrd, Grid * tgtgrd)
         for (size_t j = 1; j < txlen - 1; j+=2)
         {
 			size_t k = j * 0.5;
-			(*tgtgrd)(j, i) += = 0.25*((*srcgrd)(k,l) + (*srcgrd)(k + 1, l) + (*srcgrd)(k, l + 1)
+			(*tgtgrd)(j, i) += 0.25*((*srcgrd)(k,l) + (*srcgrd)(k + 1, l) + (*srcgrd)(k, l + 1)
 				+ (*srcgrd)(k + 1,l + 1));
 			(*tgtgrd)(j + 1, i) += 0.5*((*srcgrd)(k+1, l) + (*srcgrd)(k + 1, l+1));
 				(*tgtgrd)(j, i + 1) += 0.5*((*srcgrd)(k, l + 1) + (*srcgrd)(k + 1, l + 1));
