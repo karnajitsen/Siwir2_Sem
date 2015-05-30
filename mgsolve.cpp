@@ -90,6 +90,8 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
     double	alpha = 1.0 / hx / hx;
     double	beta = 1.0 / hy / hy;
     double	center = (2.0 * alpha) + (2.0 * beta);
+	size_t midY = ylen / 2;
+	size_t midX = xlen / 2;
 
 
     Grid tmpgrd(xlen + 1, ylen + 1, hx, hy, false);
@@ -97,6 +99,8 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
     {
         for (size_t j = 1; j < xlen; j++)
         {
+			if (i == midY && j == midX)
+				continue;
             tmpgrd(j, i) = (*fgrd)(j, i) + alpha*((*xgrd)(j + 1, i) + (*xgrd)(j - 1, i)) + beta * ((*xgrd)(j, i + 1)
                 + (*xgrd)(j, i - 1)) - (*xgrd)(j, i) * center;
         }
@@ -107,13 +111,17 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
     size_t rxlen = (*rgrid).getXsize() - 1;
     size_t rylen = (*rgrid).getYsize() - 1;
 
-
+	midY = rylen / 2;
+	midX = rxlen / 2;
 
     for (size_t i = 1; i < rylen; i++)
     {
 
         for (size_t j = 1; j < rxlen; j++)
         {
+			if (i == midY && j == midX)
+				continue;
+
             (*rgrid)(j, i) = (tmpgrd(2 * j - 1, 2 * i - 1) + tmpgrd(2 * j - 1, 2 * i + 1) +
                 tmpgrd(2 * j + 1, 2 * i - 1) + tmpgrd(2 * j + 1, 2 * i + 1) +
                 2.0*(tmpgrd(2 * j, 2 * i - 1) + tmpgrd(2 * j, 2 * i + 1) +
@@ -126,9 +134,11 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 
 inline void interpolate(Grid * srcgrd, Grid * tgtgrd)
 {
-    size_t len = (*srcgrd).getXsize() - 1;
+    //size_t len = (*srcgrd).getXsize() - 1;
     size_t txlen = (*tgtgrd).getXsize();
-    double hx = (*tgtgrd).getHx();
+	size_t tylen = (*tgtgrd).getYsize();
+	/*double hx = (*tgtgrd).getHx();
+
     Grid tmpgrd(txlen, txlen, hx, hx, false);
 
 
@@ -145,19 +155,23 @@ inline void interpolate(Grid * srcgrd, Grid * tgtgrd)
                 + (*srcgrd)(i + 1, j + 1));
         }
 
-    }
+    }*/
 
 
-    for (size_t i = 1; i < txlen - 1; i++)
+    for (size_t i = 1; i < tylen - 1; i+=2)
     {
-        for (size_t j = 1; j < txlen - 1; j++)
+		size_t l = i * 0.5;
+        for (size_t j = 1; j < txlen - 1; j+=2)
         {
-            (*tgtgrd)(j, i) += tmpgrd(j, i);
-
+			size_t k = j * 0.5;
+			(*tgtgrd)(j, i) += = 0.25*((*srcgrd)(k,l) + (*srcgrd)(k + 1, l) + (*srcgrd)(k, l + 1)
+				+ (*srcgrd)(k + 1,l + 1));
+			(*tgtgrd)(j + 1, i) += 0.5*((*srcgrd)(k+1, l) + (*srcgrd)(k + 1, l+1));
+				(*tgtgrd)(j, i + 1) += 0.5*((*srcgrd)(k, l + 1) + (*srcgrd)(k + 1, l + 1));
+				(*tgtgrd)(j + 1, i + 1) += (*srcgrd)(k + 1, l + 1);
+			
         }
     }
-
-
 
 }
 
@@ -173,13 +187,19 @@ inline void resdualNorm(const Grid* xgrd, const Grid * fgrd, double* norm)
     double	beta = 1.0;
     double	center = (2.0 * alpha + 2.0 * beta);
 
-    *norm = 0.0;
+
+	size_t midY = dimY / 2;
+	size_t midX = dimX / 2;
+
+	*norm = 0.0;
 
     for (size_t j = 1; j < dimY; j++)
     {
         for (size_t k = 1; k < dimX; k++)
         {
-            r = hx*hy*(*fgrd)(k, j) + alpha*((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + beta * ((*xgrd)(k, j + 1)
+			if (j == midY && k == midX)
+				continue;
+			r = hx*hy*(*fgrd)(k, j) + alpha*((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + beta * ((*xgrd)(k, j + 1)
                 + (*xgrd)(k, j - 1)) - (*xgrd)(k, j) * center;
 
             *norm += r*r;
