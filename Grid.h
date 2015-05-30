@@ -40,7 +40,7 @@ public:
         //data = (double*) _aligned_malloc(ld*y*sizeof(double), ALLIGNMENT);
         if (bndrYN)
         {
-            double l = - 1.0 + (sizeX - 1.0)*hx;
+            //double l = - 1.0 + (sizeX - 1.0)*hx;
             for (int j = 0.0; (size_t)j < sizeX; j++)
             {
                 double k = -1.0 + j*hx;
@@ -66,6 +66,8 @@ public:
 
     inline double gxy(const double x, const double y)
     {
+		if (x == 0 && y == 0)
+			return 0.0;
 		double r = sqrt(sqrt(x*x + y*y));
 		double theta = atan(y / x);
 		return r*sin(theta/2);

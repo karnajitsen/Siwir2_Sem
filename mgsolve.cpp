@@ -34,9 +34,9 @@ void init(double hsize, const size_t level)
     }
 
 	cout << "====After initialization=== \n\n";
-	for (size_t j = 0; j <= (*xGrids[0]).getYsize(); j++)
+	for (size_t j = 0; j < (*xGrids[0]).getYsize(); j++)
 	{
-		for (size_t k = 0; k <= (*xGrids[0]).getXsize(); k++)
+		for (size_t k = 0; k < (*xGrids[0]).getXsize(); k++)
 	{
 		cout << (*xGrids[0])(k, j) << " ";
 	}
@@ -59,9 +59,9 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 	size_t midX = (dimX - 1) / 2;
 
 	cout << "====B4 smooth=== \n\n";
-	for (size_t j = 0; j <= dimX; j++)
+	for (size_t j = 0; j < dimX; j++)
 	{
-		for (size_t k = 0; k <= dimY; k++)
+		for (size_t k = 0; k < dimY; k++)
 	{
 	cout << (*xgrd)(k, j) << " ";
 	}
@@ -100,9 +100,9 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
     }
 
 	cout << "====After smooth=== \n\n";
-	for (size_t j = 0; j <= dimX; j++)
+	for (size_t j = 0; j < dimX; j++)
 	{
-		for (size_t k = 0; k <= dimY; k++)
+		for (size_t k = 0; k < dimY; k++)
 		{
 			cout << (*xgrd)(k, j) << " ";
 		}
