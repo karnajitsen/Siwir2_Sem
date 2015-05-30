@@ -316,7 +316,7 @@ int main(int argc, char** argv)
 {
 
     //std::cout << "1";
-    if (argc < 3)
+    if (argc != 2)
     {
         std::cout << "Invalid number of argument";
         exit(0);
