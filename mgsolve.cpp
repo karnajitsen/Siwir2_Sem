@@ -328,7 +328,7 @@ int main(int argc, char** argv)
         exit(0);
     }
 
-	omp_set_num_threads(4);
+	//omp_set_num_threads(4);
 
 	int tid = omp_get_num_threads();
 	std::cout << "Hello world from thread " << tid << std::endl;
