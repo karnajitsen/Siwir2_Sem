@@ -46,11 +46,11 @@ public:
                 double k = -1.0 + j*hx;
                 data[j] = gxy(k, -1.0);
                 data[j*ld] = gxy(-1.0, k);
-                data[j + ld * (sizeX - 1)] = gxy(k, l);
-                data[j * ld + (sizeX - 1)] = gxy(l, k);
-				if (k == 0.0)
+                data[j + ld * (sizeY - 1)] = gxy(k, 1.0);
+                data[j * ld + (sizeX - 1)] = gxy(1.0, k);
+				if (k >= 0.0)
 				{
-					data[j + ld * (sizeX - 1)/2] = gxy(k, 0);
+					data[j + ld * (sizeY - 1)/2] = gxy(k, 0.0);
 				}
 
             }
