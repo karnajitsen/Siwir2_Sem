@@ -6,6 +6,7 @@
 #include <memory>
 #include <string>
 #include<malloc.h>
+#include <omp.h>
 #define LD 16
 #define ALLIGNMENT 32
 using namespace std;
@@ -41,6 +42,7 @@ public:
         if (bndrYN)
         {
             //double l = - 1.0 + (sizeX - 1.0)*hx;
+		#pragma omp parallel for
             for (int j = 0.0; (size_t)j < sizeX; j++)
             {
                 double k = -1.0 + j*hx;
@@ -75,8 +77,10 @@ public:
 
     inline void reset()
     {
+		#pragma omp parallel for
         for (size_t i = 1; i < sizeX - 1; i++)
         {
+			//#pragma omp parallel for
             for (size_t j = 1; j < sizeX - 1; j++)
             {
                 data[i*ld + j] = 0.0;

@@ -2,6 +2,7 @@
 #include<iostream>
 #include<fstream>
 #include <sys/time.h>
+#include <omp.h>
 #define XDOMLOW -1.0
 #define XDOMHIGH 1.0
 #define YDOMLOW -1.0
@@ -23,6 +24,7 @@ void init(double hsize, const size_t level)
     bool flag = true;
     xGrids = (Grid**) memalign(ALLIGNMENT, level*sizeof(Grid*));
     fGrids = (Grid**) memalign(ALLIGNMENT, level*sizeof(Grid*));
+#pragma omp parallel for
     for (size_t i = 0; i < level; i++)
     {
         xGrids[i] = new Grid(xdim, ydim, hsize, hsize, flag);
@@ -70,6 +72,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 
     for (size_t i = 0; i < iter; i++)
     {
+#pragma omp parallel for
         for (size_t j = 1; j < dimY - 1; j++)
         {
             size_t l = ((j + 1) & 0x1) + 1;
@@ -83,7 +86,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
             }
 
          }
-
+#pragma omp parallel for
         for (size_t j = 1; j < dimY - 1; j++)
         {
             size_t l = (j & 0x1) + 1;
@@ -124,6 +127,7 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 
 
     Grid tmpgrd(xlen + 1, ylen + 1, hx, hy, false);
+#pragma omp parallel for
     for (size_t i = 1; i < ylen; i++)
     {
         for (size_t j = 1; j < xlen; j++)
@@ -142,7 +146,7 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 
 	midY = rylen / 2;
 	midX = rxlen / 2;
-
+#pragma omp parallel for
     for (size_t i = 1; i < rylen; i++)
     {
 
@@ -186,7 +190,7 @@ inline void interpolate(Grid * srcgrd, Grid * tgtgrd)
 
     }*/
 
-
+#pragma omp parallel for
     for (size_t i = 1; i < tylen - 1; i+=2)
     {
 		size_t l = i * 0.5;
@@ -221,7 +225,7 @@ inline void resdualNorm(const Grid* xgrd, const Grid * fgrd, double* norm)
 	size_t midX = dimX / 2;
 
 	*norm = 0.0;
-
+	#pragma omp parallel for
     for (size_t j = 1; j < dimY; j++)
     {
         for (size_t k = 1; k < dimX; k++)
@@ -247,7 +251,7 @@ inline void errorNorm(const Grid* xgrd, const Grid * sgrd, double* norm)
     size_t dimY = (*xgrd).getYsize();
     double r = 0.0;
     *norm = 0.0;
-
+	#pragma omp parallel for
     for (size_t j = 0; j < dimY; j++)
     {
         for (size_t k = 0; k < dimX; k++)
@@ -265,14 +269,16 @@ inline void errorNorm(const Grid* xgrd, const Grid * sgrd, double* norm)
 void mgsolve(size_t level, size_t& vcycle)
 {
     size_t gdim = pow(2, level) + 1;
-    double oldnorm = 0.0, newnorm = 10.0, convrate = 0.0;
+    double oldnorm = 0.0, newnorm = 1.0, convrate = 0.0;
     double hsize = (XDOMHIGH - XDOMLOW) / (gdim - 1.0);
 
     init(hsize, level);
     sGrid = new Grid(gdim, gdim, hsize, hsize, true);
 
+	#pragma omp parallel for
     for (size_t i = 0; i < gdim; i++)
     {
+		//#pragma omp parallel for
         for (size_t j = 0; j < gdim; j++)
         {
            (*sGrid)(j, i) = (*sGrid).gxy(-1.0+j*hsize, -1.0+i*hsize);
@@ -322,6 +328,8 @@ int main(int argc, char** argv)
         exit(0);
     }
 
+	omp_set_num_threads(32);
+
     size_t level = atoi(argv[1]);
     size_t vcycle;
 
@@ -346,6 +354,7 @@ int main(int argc, char** argv)
     std::ofstream	fOut1(fname1);
     std::string fnames1 = std::string("data/Dirichlet/exactsolution_h_") + std::string(to_string(gdim - 1)) + std::string(".txt");
     std::ofstream	fOutsolt1(fnames1);
+#pragma omp parallel for
     for (size_t y = 0; y < gdim; ++y) {
     for (size_t x = 0; x < gdim; ++x) {
 
