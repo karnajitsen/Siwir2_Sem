@@ -330,7 +330,7 @@ int main(int argc, char** argv)
 
 	omp_set_num_threads(4);
 
-	int tid = omp_get_thread_num();
+	int tid = omp_get_num_threads();
 	std::cout << "Hello world from thread " << tid << std::endl;
 
     size_t level = atoi(argv[1]);
