@@ -265,7 +265,7 @@ inline void errorNorm(const Grid* xgrd, const Grid * sgrd, double* norm)
 void mgsolve(size_t level, size_t& vcycle)
 {
     size_t gdim = pow(2, level) + 1;
-    double oldnorm = 0.0, newnorm = 0.0, convrate = 0.0;
+    double oldnorm = 0.0, newnorm = 10.0, convrate = 0.0;
     double hsize = (XDOMHIGH - XDOMLOW) / (gdim - 1.0);
 
     init(hsize, level);
@@ -327,7 +327,7 @@ int main(int argc, char** argv)
 
     timeval start, end;
 
-    std::cout << "Dirichlet:: Level = " << level << " V-Cycles=" << vcycle << "\n\n";
+    std::cout << "Dirichlet:: Level = " << level << "\n\n";
 
     std::cout << "\n\n =============== Output for Dirichlet Boundary Value Problem 1 ===================\n\n";
 
