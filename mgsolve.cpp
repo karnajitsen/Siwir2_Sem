@@ -6,7 +6,7 @@
 #define XDOMHIGH 1.0
 #define YDOMLOW -1.0
 #define YDOMHIGH 1.0
-#define TOLERR 0.00001
+#define TOLERR 0.0000918
 #define V1 2
 #define V2 1
 
@@ -33,7 +33,7 @@ void init(double hsize, const size_t level)
         flag = false;
     }
 
-	cout << "====After initialization=== \n\n";
+	/*cout << "====After initialization=== \n\n";
 	for (size_t j = 0; j < (*xGrids[0]).getYsize(); j++)
 	{
 		for (size_t k = 0; k < (*xGrids[0]).getXsize(); k++)
@@ -41,7 +41,7 @@ void init(double hsize, const size_t level)
 		cout << (*xGrids[0])(k, j) << " ";
 	}
 	cout << '\n';
-	}
+	}*/
     
 }
 
@@ -58,7 +58,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 	size_t midY = (dimY - 1) / 2;
 	size_t midX = (dimX - 1) / 2;
 
-	cout << "====B4 smooth=== \n\n";
+	/*cout << "====B4 smooth=== \n\n";
 	for (size_t j = 0; j < dimX; j++)
 	{
 		for (size_t k = 0; k < dimY; k++)
@@ -66,7 +66,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 	cout << (*xgrd)(k, j) << " ";
 	}
 	cout << '\n';
-	}
+	}*/
 
     for (size_t i = 0; i < iter; i++)
     {
@@ -99,7 +99,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
         }
     }
 
-	cout << "====After smooth=== \n\n";
+	/*cout << "====After smooth=== \n\n";
 	for (size_t j = 0; j < dimX; j++)
 	{
 		for (size_t k = 0; k < dimY; k++)
@@ -107,7 +107,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 			cout << (*xgrd)(k, j) << " ";
 		}
 		cout << '\n';
-	}
+	}*/
 }
 
 void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
@@ -262,7 +262,7 @@ inline void errorNorm(const Grid* xgrd, const Grid * sgrd, double* norm)
     *norm = sqrt(*norm / dimX / dimY);
 }
 
-void mgsolve(size_t level, size_t vcycle)
+void mgsolve(size_t level, size_t& vcycle)
 {
     size_t gdim = pow(2, level) + 1;
     double oldnorm = 0.0, newnorm = 0.0, convrate = 0.0;
@@ -278,8 +278,8 @@ void mgsolve(size_t level, size_t vcycle)
            (*sGrid)(j, i) = (*sGrid).gxy(-1.0+j*hsize, -1.0+i*hsize);
         }
     }
-
-    for (int i = 1; i <= (int)vcycle; i++)
+	int i = 0;
+	for ( i = 1; newnorm > TOLERR; i++)
     {
         for (size_t jl = 0; jl < level - 1; jl++)
         {
@@ -306,6 +306,7 @@ void mgsolve(size_t level, size_t vcycle)
 
     }
     //orthogonalize(xGrids[0]);
+	vcycle = i;
     errorNorm(xGrids[0], sGrid, &newnorm);
     
     std::cout << "Dirichlet:: Error L2 Norm for h as 1/" << gdim - 1 << " = " << newnorm << "\n\n";
@@ -322,7 +323,7 @@ int main(int argc, char** argv)
     }
 
     size_t level = atoi(argv[1]);
-    size_t vcycle = atoi(argv[2]);
+    size_t vcycle;
 
     timeval start, end;
 
@@ -348,8 +349,8 @@ int main(int argc, char** argv)
     for (size_t y = 0; y < gdim; ++y) {
     for (size_t x = 0; x < gdim; ++x) {
 
-    fOut1 << x*hsize << "\t" << y*hsize << "\t" << (*xGrids[0])(x, y) << std::endl;
-    fOutsolt1 << x*hsize << "\t" << y*hsize << "\t" << (*sGrid)(x, y) << std::endl;
+    fOut1 << x*hsize - 1.0 << "\t" << y*hsize - 1.0 << "\t" << (*xGrids[0])(x, y) << std::endl;
+    fOutsolt1 << x*hsize - 1.0 << "\t" << y*hsize - 1.0 << "\t" << (*sGrid)(x, y) << std::endl;
     }
     fOut1 << std::endl;
     fOutsolt1 << std::endl;
