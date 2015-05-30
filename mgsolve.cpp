@@ -341,9 +341,9 @@ int main(int argc, char** argv)
     std::cout << "Dirichlet:: Level = " << level << "\n\n";
 
     std::cout << "\n\n =============== Output for Dirichlet Boundary Value Problem 1 ===================\n\n";
-
+	std::cout << "333";
     gettimeofday(&start, 0);
-    //isNeumann = false;
+	std::cout << "22222";
     mgsolve(level, vcycle);
 
     gettimeofday(&end, 0);

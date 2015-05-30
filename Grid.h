@@ -42,7 +42,7 @@ public:
         if (bndrYN)
         {
             //double l = - 1.0 + (sizeX - 1.0)*hx;
-		#pragma omp parallel
+		//#pragma omp parallel for
             for (int j = 0.0; (size_t)j < sizeX; j++)
             {
                 double k = -1.0 + j*hx;
