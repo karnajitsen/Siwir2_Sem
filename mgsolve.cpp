@@ -328,7 +328,10 @@ int main(int argc, char** argv)
         exit(0);
     }
 
-	omp_set_num_threads(32);
+	omp_set_num_threads(4);
+
+	int tid = omp_get_thread_num();
+	std::cout << "Hello world from thread " << tid << std::endl;
 
     size_t level = atoi(argv[1]);
     size_t vcycle;
