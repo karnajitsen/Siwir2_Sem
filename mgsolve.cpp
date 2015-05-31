@@ -68,7 +68,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 //#pragma omp parallel num_threads(4)
 	//	{
 		
-#pragma omp parallel firstprivate(dimY,dimX,midX,midY,hx,hy) shared(xgrd,fgrd)
+#pragma omp parallel firstprivate(dimY,dimX,midX,midY,hx,hy) shared(xgrd)
 		{
 		#pragma omp for
 			for ( size_t j = 1; j < dimY - 1; j++)
