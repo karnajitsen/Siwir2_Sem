@@ -166,7 +166,7 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 
 	midY = rylen / 2;
 	midX = rxlen / 2;
-#pragma omp parallel private(i) firstprivate(rxlen,rylen,midX,midY,tmpgrd)
+#pragma omp parallel private(i) firstprivate(rxlen,rylen,midX,midY)
 	{
 #pragma omp for
 		for (i = 1; i < rylen; i++)
