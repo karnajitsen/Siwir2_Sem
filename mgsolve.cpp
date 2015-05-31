@@ -268,8 +268,8 @@ inline void errorNorm(const Grid* xgrd, const Grid * sgrd, double* norm)
     size_t dimY = (*xgrd).getYsize();
     double r = 0.0, sum = 0.0;
 	size_t j;
-#pragma omp parallel private(j) firstprivate(dimY, dimX,r) reduction(+:sum)
-	{
+//#pragma omp parallel private(j) firstprivate(dimY, dimX,r) reduction(+:sum)
+	//{
 #pragma omp parallel for
 		for (j = 0; j < dimY; j++)
 		{
@@ -280,7 +280,7 @@ inline void errorNorm(const Grid* xgrd, const Grid * sgrd, double* norm)
 			}
 
 		}
-	}
+	//}
 
     *norm = sqrt(sum / dimX / dimY);
 }
@@ -293,8 +293,8 @@ void mgsolve(size_t level, size_t &vcycle)
 	size_t i = 0;
     init(hsize, level);
 	sGrid = new Grid(gdim, gdim, hsize, hsize, true);
-#pragma omp parallel private(i) firstprivate(gdim,hsize)
-	{
+//#pragma omp parallel private(i) firstprivate(gdim,hsize)
+	//{
 #pragma omp parallel for
 		for (i = 0; i < gdim; i++)
 		{
@@ -304,7 +304,7 @@ void mgsolve(size_t level, size_t &vcycle)
 				(*sGrid)(j, i) = (*sGrid).gxy(-1.0 + j*hsize, -1.0 + i*hsize);
 			}
 		}
-	}
+	//}
 	
 	for ( i = 1; newnorm > TOLERR; i++)
     {
