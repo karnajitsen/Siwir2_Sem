@@ -67,11 +67,11 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
     {
 //#pragma omp parallel num_threads(4)
 	//	{
-		size_t j = 1;
-#pragma omp parallel private(j) firstprivate(dimY,dimX,midX,midY,hx,hy)
+		
+#pragma omp parallel firstprivate(dimY,dimX,midX,midY,hx,hy)
 		{
 		#pragma omp for
-			for ( j = 1; j < dimY - 1; j++)
+			for ( size_t j = 1; j < dimY - 1; j++)
 			{
 				/*tid1 = omp_get_num_threads();
 				tid = omp_get_num_threads();
@@ -89,10 +89,10 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 
 			}
 		}
-#pragma omp parallel private(j) firstprivate(dimY,dimX,midX,midY,hx,hy)
+#pragma omp parallel firstprivate(dimY,dimX,midX,midY,hx,hy)
 		{
 	#pragma omp for
-			for (j = 1; j < dimY - 1; j++)
+			for (size_t j = 1; j < dimY - 1; j++)
 			{
 				/*if (j == 1)
 				{
@@ -235,9 +235,9 @@ inline void resdualNorm(const Grid* xgrd, const Grid * fgrd, double* norm)
 	size_t midY = dimY / 2;
 	size_t midX = dimX / 2;
 	size_t j;
-	*norm = 0.0;
+	double sum = 0.0;
 	std::cout << "***************:: Residual= ";
-#pragma omp parallel private(j) firstprivate(dimX,dimY,midX,midY,hx,hy) 
+#pragma omp parallel private(j) firstprivate(dimX,dimY,midX,midY,hx,hy,r) reduction(+: sum)
 	{
 #pragma omp for
 		for (j = 1; j < dimY; j++)
@@ -251,12 +251,12 @@ inline void resdualNorm(const Grid* xgrd, const Grid * fgrd, double* norm)
 					r = hx*hy*(*fgrd)(k, j) + ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + ((*xgrd)(k, j + 1)
 					+ (*xgrd)(k, j - 1)) - (*xgrd)(k, j) * 4.0;
 
-				*norm += r*r;
+				sum += r*r;
 			}
 		}
 	}
 
-        *norm = sqrt(*norm / (dimX - 1) / (dimY - 1));
+        *norm = sqrt(sum / (dimX - 1) / (dimY - 1));
 }
 
 
@@ -266,20 +266,23 @@ inline void errorNorm(const Grid* xgrd, const Grid * sgrd, double* norm)
 
     size_t dimX = (*xgrd).getXsize();
     size_t dimY = (*xgrd).getYsize();
-    double r = 0.0;
-    *norm = 0.0;
-	#pragma omp parallel for
-    for (size_t j = 0; j < dimY; j++)
-    {
-        for (size_t k = 0; k < dimX; k++)
-        {
-            r = (*sgrd)(k , j) - (*xgrd)(k, j);
-            *norm += r*r;
-        }
+    double r = 0.0, sum = 0.0;
+	size_t j
+#pragma omp parallel private(j) firstprivate(dimY, dimX,r) reduction(+:sum)
+	{
+#pragma omp parallel for
+		for (j = 0; j < dimY; j++)
+		{
+			for (size_t k = 0; k < dimX; k++)
+			{
+				r = (*sgrd)(k, j) - (*xgrd)(k, j);
+				sum += r*r;
+			}
 
-    }
+		}
+	}
 
-    *norm = sqrt(*norm / dimX / dimY);
+    *norm = sqrt(sum / dimX / dimY);
 }
 
 void mgsolve(size_t level, size_t &vcycle)
@@ -287,20 +290,22 @@ void mgsolve(size_t level, size_t &vcycle)
     size_t gdim = pow(2, level) + 1;
     double oldnorm = 0.0, newnorm = 1.0, convrate = 0.0;
     double hsize = (XDOMHIGH - XDOMLOW) / (gdim - 1.0);
-	//std::cout << "111111";
+	size_t i = 0;
     init(hsize, level);
-    sGrid = new Grid(gdim, gdim, hsize, hsize, true);
-	//std::cout << "22222";
-	#pragma omp parallel for
-    for (size_t i = 0; i < gdim; i++)
-    {
-		//#pragma omp parallel for
-        for (size_t j = 0; j < gdim; j++)
-        {
-           (*sGrid)(j, i) = (*sGrid).gxy(-1.0+j*hsize, -1.0+i*hsize);
-        }
-    }
-	int i = 0;
+	sGrid = new Grid(gdim, gdim, hsize, hsize, true);
+#pragma omp parallel private(i) firstprivate(gdim,hsize)
+	{
+#pragma omp parallel for
+		for (i = 0; i < gdim; i++)
+		{
+			//#pragma omp parallel for
+			for (size_t j = 0; j < gdim; j++)
+			{
+				(*sGrid)(j, i) = (*sGrid).gxy(-1.0 + j*hsize, -1.0 + i*hsize);
+			}
+		}
+	}
+	
 	for ( i = 1; newnorm > TOLERR; i++)
     {
         for (size_t jl = 0; jl < level - 1; jl++)
@@ -327,8 +332,7 @@ void mgsolve(size_t level, size_t &vcycle)
        
 
     }
-    //orthogonalize(xGrids[0]);
-	vcycle = i;
+    vcycle = i;
     errorNorm(xGrids[0], sGrid, &newnorm);
     
     std::cout << "Dirichlet:: Error L2 Norm for h as 1/" << gdim - 1 << " = " << newnorm << "\n\n";
@@ -371,18 +375,23 @@ int main(int argc, char** argv)
     std::ofstream	fOut1(fname1);
     std::string fnames1 = std::string("data/Dirichlet/exactsolution_h_") + std::string(to_string(gdim - 1)) + std::string(".txt");
     std::ofstream	fOutsolt1(fnames1);
+	std::cout << "\n\nWriting solution to the file...\n\n";
+#pragma omp parallel firstprivate(gdim,hsize) 
+	{
 #pragma omp parallel for
-    for (size_t y = 0; y < gdim; ++y) {
-    for (size_t x = 0; x < gdim; ++x) {
+		for (size_t y = 0; y < gdim; ++y) {
+			for (size_t x = 0; x < gdim; ++x) {
 
-    fOut1 << x*hsize - 1.0 << "\t" << y*hsize - 1.0 << "\t" << (*xGrids[0])(x, y) << std::endl;
-    fOutsolt1 << x*hsize - 1.0 << "\t" << y*hsize - 1.0 << "\t" << (*sGrid)(x, y) << std::endl;
-    }
-    fOut1 << std::endl;
-    fOutsolt1 << std::endl;
-    }
-    fOut1.close();
-    fOutsolt1.close();
+				fOut1 << x*hsize - 1.0 << "\t" << y*hsize - 1.0 << "\t" << (*xGrids[0])(x, y) << std::endl;
+				fOutsolt1 << x*hsize - 1.0 << "\t" << y*hsize - 1.0 << "\t" << (*sGrid)(x, y) << std::endl;
+			}
+			fOut1 << std::endl;
+			fOutsolt1 << std::endl;
+		}
+	}
+		fOut1.close();
+		fOutsolt1.close();
+	
     std::cout << "\n\n =============== Dirichlet Boundary Value Problem 1 ends here ===================\n\n";
 
     return 0;
