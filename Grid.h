@@ -42,20 +42,23 @@ public:
         if (bndrYN)
         {
             //double l = - 1.0 + (sizeX - 1.0)*hx;
-		#pragma omp for
-            for (int j = 0.0; (size_t)j < sizeX; j++)
-            {
-                double k = -1.0 + j*hx;
-                data[j] = gxy(k, -1.0);
-                data[j*ld] = gxy(-1.0, k);
-                data[j + ld * (sizeY - 1)] = gxy(k, 1.0);
-                data[j * ld + (sizeX - 1)] = gxy(1.0, k);
-				if (k >= 0.0)
+	#pragma omp parallel firstprivate(sizeX, ld, hx) shared(data)
+			{
+	#pragma omp for
+				for (int j = 0.0; (size_t)j < sizeX; j++)
 				{
-					data[j + ld * (sizeY - 1)/2] = gxy(k, 0.0);
-				}
+					double k = -1.0 + j*hx;
+					data[j] = gxy(k, -1.0);
+					data[j*ld] = gxy(-1.0, k);
+					data[j + ld * (sizeY - 1)] = gxy(k, 1.0);
+					data[j * ld + (sizeX - 1)] = gxy(1.0, k);
+					if (k >= 0.0)
+					{
+						data[j + ld * (sizeY - 1) / 2] = gxy(k, 0.0);
+					}
 
-            }
+				}
+			}
         }
 
           //data++;
@@ -77,15 +80,20 @@ public:
 
     inline void reset()
     {
-		#pragma omp for 
-        for (size_t i = 1; i < sizeY - 1; i++)
-        {
-			//#pragma omp parallel for
-            for (size_t j = 1; j < sizeX - 1; j++)
-            {
-                data[i*ld + j] = 0.0;
-            }
-        }
+		size_t x = sizeX - 1;
+		size_t y = sizeY - 1;
+	#pragma omp parallel firstprivate(x,y,ld)
+		{
+	#pragma omp for 
+			for (size_t i = 1; i < y; i++)
+			{
+				//#pragma omp parallel for
+				for (size_t j = 1; j < x; j++)
+				{
+					data[i*ld + j] = 0.0;
+				}
+			}
+		}
     }
 
     inline double& operator()(const size_t x, const size_t y)
