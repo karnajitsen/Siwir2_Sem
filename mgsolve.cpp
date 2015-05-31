@@ -338,16 +338,16 @@ int main(int argc, char** argv)
 	
 
 	int finalImage[12][12];
-	int x, y;
+	int xx, yy;
 	int tid = omp_get_num_threads();
 	int tid1 = omp_get_thread_num();
 	std::cout << "Hello world from thread " << tid << " " << tid1 << std::endl;
 #pragma omp parallel for
-	for (x = 0; x < 12; x++)
+	for (xx = 0; xx < 12; xx++)
 	{
-		for (y = 0; y < 12; y++)
+		for (yy = 0; yy < 12; yy++)
 		{
-			finalImage[x][y] = 1;
+			finalImage[xx][yy] = 1;
 		}
 	}
 	
