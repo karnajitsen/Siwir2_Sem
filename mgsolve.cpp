@@ -293,8 +293,8 @@ void mgsolve(size_t level, size_t &vcycle)
 	size_t i = 0;
     init(hsize, level);
 	sGrid = new Grid(gdim, gdim, hsize, hsize, true);
-//#pragma omp parallel private(i) firstprivate(gdim,hsize)
-	//{
+#pragma omp parallel private(i) firstprivate(gdim,hsize)
+	{
 #pragma omp parallel for
 		for (i = 0; i < gdim; i++)
 		{
@@ -304,7 +304,7 @@ void mgsolve(size_t level, size_t &vcycle)
 				(*sGrid)(j, i) = (*sGrid).gxy(-1.0 + j*hsize, -1.0 + i*hsize);
 			}
 		}
-	//}
+	}
 	
 	for ( i = 1; newnorm > TOLERR; i++)
     {
