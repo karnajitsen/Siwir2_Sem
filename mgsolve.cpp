@@ -193,12 +193,12 @@ inline void interpolate(Grid * srcgrd, Grid * tgtgrd)
     size_t txlen = (*tgtgrd).getXsize()-1;
 	size_t tylen = (*tgtgrd).getYsize()-1;
 	
-	size_t i;
+	//ssize_t i;
 	//std::cout << "***************:: interpolation= ";
-#pragma omp parallel private(i) firstprivate(txlen,tylen) 
+#pragma omp parallel //private(i) firstprivate(txlen,tylen) 
 	{
 #pragma omp for
-		for (i = 1; i < tylen; i += 2)
+		for (size_t i = 1; i < tylen; i += 2)
 		{
 			/*int tid1 = omp_get_num_threads();
 			int tid = omp_get_num_threads();
@@ -234,13 +234,13 @@ inline void resdualNorm(const Grid* xgrd, const Grid * fgrd, double* norm)
 
 	size_t midY = dimY / 2;
 	size_t midX = dimX / 2;
-	size_t j;
+	//size_t j;
 	double sum = 0.0;
 	//std::cout << "***************:: Residual= ";
-#pragma omp parallel private(j) firstprivate(dimX,dimY,midX,midY,hx,hy,r) reduction(+: sum)
+#pragma omp parallel //private(j) firstprivate(dimX,dimY,midX,midY,hx,hy,r) reduction(+: sum)
 	{
 #pragma omp for
-		for (j = 1; j < dimY; j++)
+		for (size_t j = 1; j < dimY; j++)
 		{
 			/*int tid1 = omp_get_num_threads();
 			int tid = omp_get_num_threads();
@@ -269,11 +269,11 @@ inline void errorNorm(const Grid* xgrd, const Grid * sgrd, double* norm)
     size_t dimX = (*xgrd).getXsize();
     size_t dimY = (*xgrd).getYsize();
     double r = 0.0, sum = 0.0;
-	size_t j;
-#pragma omp parallel private(j) firstprivate(dimY, dimX,r) reduction(+: sum)
+	//size_t j;
+#pragma omp parallel //private(j) firstprivate(dimY, dimX,r) reduction(+: sum)
 	{
 #pragma omp for
-		for (j = 0; j < dimY; j++)
+		for (size_t j = 0; j < dimY; j++)
 		{
 			for (size_t k = 0; k < dimX; k++)
 			{
