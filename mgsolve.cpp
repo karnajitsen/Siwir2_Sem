@@ -69,7 +69,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 	}
 	cout << '\n';
 	}*/
-
+	omp_set_num_threads(4);
 	int tid = omp_get_num_threads();
 	int tid1 = omp_get_thread_num();
 	std::cout << "Hello world from thread " << tid << " " << std::endl;
