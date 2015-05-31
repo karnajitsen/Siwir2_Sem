@@ -251,7 +251,7 @@ inline void errorNorm(const Grid* xgrd, const Grid * sgrd, double* norm)
     size_t dimY = (*xgrd).getYsize();
     double r = 0.0;
     *norm = 0.0;
-	//#pragma omp parallel for
+	#pragma omp parallel for
     for (size_t j = 0; j < dimY; j++)
     {
         for (size_t k = 0; k < dimX; k++)
@@ -271,10 +271,10 @@ void mgsolve(size_t level, size_t &vcycle)
     size_t gdim = pow(2, level) + 1;
     double oldnorm = 0.0, newnorm = 1.0, convrate = 0.0;
     double hsize = (XDOMHIGH - XDOMLOW) / (gdim - 1.0);
-	std::cout << "111111";
+	//std::cout << "111111";
     init(hsize, level);
     sGrid = new Grid(gdim, gdim, hsize, hsize, true);
-	std::cout << "22222";
+	//std::cout << "22222";
 	#pragma omp parallel for
     for (size_t i = 0; i < gdim; i++)
     {
@@ -328,7 +328,7 @@ int main(int argc, char** argv)
         exit(0);
     }
 
-	//omp_set_num_threads(4);
+	omp_set_num_threads(4);
 
 	int tid = omp_get_num_threads();
 	int tid1 = omp_get_thread_num();
