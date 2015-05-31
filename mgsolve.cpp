@@ -68,7 +68,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 //#pragma omp parallel num_threads(4)
 	//	{
 		size_t j = 1;
-#pragma omp parallel private(j) firstprivate(dimY,dimX,midX,midY,(*fgrd),hx,hy) shared((*xgrd))
+#pragma omp parallel private(j) firstprivate(dimY,dimX,midX,midY,*fgrd,hx,hy) shared(*xgrd)
 		{
 		#pragma omp for
 			for ( j = 1; j < dimY - 1; j++)
@@ -89,7 +89,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 
 			}
 		}
-#pragma omp parallel private(j) firstprivate(dimY,dimX,midX,midY,(*fgrd),hx,hy) shared((*xgrd))
+#pragma omp parallel private(j) firstprivate(dimY,dimX,midX,midY,*fgrd,hx,hy) shared(*xgrd)
 		{
 	#pragma omp for
 			for (j = 1; j < dimY - 1; j++)
@@ -142,7 +142,7 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 
 	Grid tmpgrd(xlen + 1, ylen + 1, hx, hy, false);
 	size_t i = 1;
-#pragma omp parallel private(i) firstprivate(xlen,ylen,midX,midY,alpha,beta,center,(*fgrd),(*xgrd)) shared(tmpgrd) 
+#pragma omp parallel private(i) firstprivate(xlen,ylen,midX,midY,alpha,beta,center,*fgrd,*xgrd) shared(tmpgrd) 
 	{
 #pragma omp for
 		for (i = 1; i < ylen; i++)
@@ -166,7 +166,7 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 
 	midY = rylen / 2;
 	midX = rxlen / 2;
-#pragma omp parallel private(i) firstprivate(rxlen,rylen,midX,midY,tmpgrd) shared((*rgrid))
+#pragma omp parallel private(i) firstprivate(rxlen,rylen,midX,midY,tmpgrd) shared(*rgrid)
 	{
 #pragma omp for
 		for (i = 1; i < rylen; i++)
@@ -239,20 +239,21 @@ inline void resdualNorm(const Grid* xgrd, const Grid * fgrd, double* norm)
 #pragma omp parallel private(i) firstprivate(dimX,dimY,midX,midY,hx,hy) 
 	{
 #pragma omp for
-    for (size_t j = 1; j < dimY; j++)
-    {
-		/*int tid1 = omp_get_num_threads();
-		int tid = omp_get_num_threads();
-		std::cout << "inside residual for " << tid1 << " " << tid << std::endl;*/
-        for (size_t k = 1; k < dimX; k++)
-        {
-			if ((j == midY && k < midX) || j != midY)
-			r = hx*hy*(*fgrd)(k, j) + ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + ((*xgrd)(k, j + 1)
-                + (*xgrd)(k, j - 1)) - (*xgrd)(k, j) * 4.0;
+		for (size_t j = 1; j < dimY; j++)
+		{
+			/*int tid1 = omp_get_num_threads();
+			int tid = omp_get_num_threads();
+			std::cout << "inside residual for " << tid1 << " " << tid << std::endl;*/
+			for (size_t k = 1; k < dimX; k++)
+			{
+				if ((j == midY && k < midX) || j != midY)
+					r = hx*hy*(*fgrd)(k, j) + ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + ((*xgrd)(k, j + 1)
+					+ (*xgrd)(k, j - 1)) - (*xgrd)(k, j) * 4.0;
 
-            *norm += r*r;
-        }
-    }
+				*norm += r*r;
+			}
+		}
+	}
 
         *norm = sqrt(*norm / (dimX - 1) / (dimY - 1));
 }
