@@ -80,7 +80,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 		//int xx, yy;
 		int tid = omp_get_num_threads();
 		int tid1 = omp_get_thread_num();
-		//std::cout << "Hello world from thread " << tid << " " << tid1 << std::endl;
+		std::cout << "Hello world from thread " << tid << " " << tid1 << std::endl;
 
 		for (int xx = 0; xx < 12; xx++)
 		{
