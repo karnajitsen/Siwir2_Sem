@@ -248,10 +248,12 @@ inline void resdualNorm(const Grid* xgrd, const Grid * fgrd, double* norm)
 			for (size_t k = 1; k < dimX; k++)
 			{
 				if ((j == midY && k < midX) || j != midY)
+				{
 					r = hx*hy*(*fgrd)(k, j) + ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + ((*xgrd)(k, j + 1)
-					+ (*xgrd)(k, j - 1)) - (*xgrd)(k, j) * 4.0;
+						+ (*xgrd)(k, j - 1)) - (*xgrd)(k, j) * 4.0;
 
-				sum += r*r;
+					sum += r*r;
+				}
 			}
 		}
 	}

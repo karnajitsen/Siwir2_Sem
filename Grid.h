@@ -74,8 +74,10 @@ public:
 		if (x == 0.0 && y == 0.0)
 			return 0.0;
 		double r = sqrt(sqrt(x*x + y*y));
-		double theta = atan(y / x);
-		return r*sin(theta/2.0);
+
+		double theta = atan2(y, x);
+		//std::cout << "Arctan = " << 360 - abs(180 * theta / 3.14159) << '\n';
+		return r*sin(M_PI - abs(theta) * 0.5);
     }
 
     inline void reset()
