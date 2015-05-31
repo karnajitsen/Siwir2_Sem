@@ -123,8 +123,8 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
         {
 			if (j == 1)
 			{
-				tid1 = omp_get_num_threads();
-				tid = omp_get_num_threads();
+				int tid1 = omp_get_num_threads();
+				int tid = omp_get_num_threads();
 				std::cout << "inside smooth for loop 2 " << tid1 << " " << tid << std::endl;
 			}
             size_t l = (j & 0x1) + 1;
