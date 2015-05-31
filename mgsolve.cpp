@@ -299,7 +299,7 @@ void mgsolve(size_t level)
 #pragma omp parallel private(k) firstprivate(gdim,hsize)
 	{
 #pragma omp for
-		for (size_t k = 0; k < gdim; k++)
+		for (k = 0; k < gdim; k++)
 		{
 			//#pragma omp parallel for
 			for (size_t j = 0; j < gdim; j++)
