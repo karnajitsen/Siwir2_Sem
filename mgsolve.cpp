@@ -72,7 +72,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 
     for (size_t i = 0; i < iter; i++)
     {
-#pragma omp parallel for
+#pragma omp parallel
         for (size_t j = 1; j < dimY - 1; j++)
         {
             size_t l = ((j + 1) & 0x1) + 1;
@@ -86,7 +86,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
             }
 
          }
-#pragma omp parallel for
+#pragma omp parallel
         for (size_t j = 1; j < dimY - 1; j++)
         {
             size_t l = (j & 0x1) + 1;
@@ -127,7 +127,7 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 
 
     Grid tmpgrd(xlen + 1, ylen + 1, hx, hy, false);
-#pragma omp parallel for
+#pragma omp parallel
     for (size_t i = 1; i < ylen; i++)
     {
         for (size_t j = 1; j < xlen; j++)
@@ -146,7 +146,7 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 
 	midY = rylen / 2;
 	midX = rxlen / 2;
-#pragma omp parallel for
+#pragma omp parallel
     for (size_t i = 1; i < rylen; i++)
     {
 
@@ -190,7 +190,7 @@ inline void interpolate(Grid * srcgrd, Grid * tgtgrd)
 
     }*/
 
-#pragma omp parallel for
+#pragma omp parallel
     for (size_t i = 1; i < tylen - 1; i+=2)
     {
 		size_t l = i * 0.5;
@@ -225,7 +225,7 @@ inline void resdualNorm(const Grid* xgrd, const Grid * fgrd, double* norm)
 	size_t midX = dimX / 2;
 
 	*norm = 0.0;
-	#pragma omp parallel for
+	#pragma omp parallel
     for (size_t j = 1; j < dimY; j++)
     {
         for (size_t k = 1; k < dimX; k++)
@@ -251,7 +251,7 @@ inline void errorNorm(const Grid* xgrd, const Grid * sgrd, double* norm)
     size_t dimY = (*xgrd).getYsize();
     double r = 0.0;
     *norm = 0.0;
-	#pragma omp parallel for
+	#pragma omp parallel
     for (size_t j = 0; j < dimY; j++)
     {
         for (size_t k = 0; k < dimX; k++)
@@ -275,7 +275,7 @@ void mgsolve(size_t level, size_t &vcycle)
     init(hsize, level);
     sGrid = new Grid(gdim, gdim, hsize, hsize, true);
 	//std::cout << "22222";
-	#pragma omp parallel for
+	#pragma omp parallel 
     for (size_t i = 0; i < gdim; i++)
     {
 		//#pragma omp parallel for
@@ -358,7 +358,7 @@ int main(int argc, char** argv)
     std::ofstream	fOut1(fname1);
     std::string fnames1 = std::string("data/Dirichlet/exactsolution_h_") + std::string(to_string(gdim - 1)) + std::string(".txt");
     std::ofstream	fOutsolt1(fnames1);
-#pragma omp parallel for
+#pragma omp parallel 
     for (size_t y = 0; y < gdim; ++y) {
     for (size_t x = 0; x < gdim; ++x) {
 
