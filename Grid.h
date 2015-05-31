@@ -7,7 +7,7 @@
 #include <string>
 #include<malloc.h>
 #include <omp.h>
-#define LD 4
+#define LD 16
 #define ALLIGNMENT 32
 using namespace std;
 //#define M_PI 3.14
@@ -15,7 +15,7 @@ class Grid
 {
 
     //__declspec(align(128))
-    double * __restrict data = NULL;
+	__declspec(align(32)) double * __restrict data = NULL;
     size_t sizeX, sizeY, ld, totLength;
     double hx, hy;
 
