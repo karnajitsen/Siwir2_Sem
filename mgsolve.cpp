@@ -74,6 +74,23 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 	int tid1 = omp_get_thread_num();
 	std::cout << "Hello world from thread " << tid << " " << std::endl;
 
+#pragma omp parallel 
+	{
+		int finalImage[12][12];
+		//int xx, yy;
+		int tid = omp_get_num_threads();
+		int tid1 = omp_get_thread_num();
+		//std::cout << "Hello world from thread " << tid << " " << tid1 << std::endl;
+
+		for (int xx = 0; xx < 12; xx++)
+		{
+			for (int yy = 0; yy < 12; yy++)
+			{
+				finalImage[xx][yy] = 1;
+			}
+		}
+	}
+
     for (size_t i = 0; i < iter; i++)
     {
 #pragma omp parallel
