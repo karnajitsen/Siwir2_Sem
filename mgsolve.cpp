@@ -142,7 +142,7 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 	//std::cout << "***************:: restriction= ";
 	Grid tmpgrd(xlen + 1, ylen + 1, hx, hy, false);
 	//size_t i = 1;
-#pragma omp parallel firstprivate(xlen,ylen,midX,midY,alpha,beta,center)
+#pragma omp parallel //firstprivate(xlen,ylen,midX,midY,alpha,beta,center)
 	{
 #pragma omp for
 		for (size_t i = 1; i < ylen; i++)
@@ -166,7 +166,7 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 
 	midY = rylen / 2;
 	midX = rxlen / 2;
-#pragma omp parallel firstprivate(rxlen,rylen,midX,midY)
+#pragma omp parallel //firstprivate(rxlen,rylen,midX,midY)
 	{
 #pragma omp for
 		for (size_t i = 1; i < rylen; i++)
@@ -195,7 +195,7 @@ inline void interpolate(Grid * srcgrd, Grid * tgtgrd)
 	
 	//ssize_t i;
 	//std::cout << "***************:: interpolation= ";
-#pragma omp parallel  firstprivate(txlen,tylen) 
+#pragma omp parallel  //firstprivate(txlen,tylen) 
 	{
 #pragma omp for
 		for (size_t i = 1; i < tylen; i += 2)
@@ -237,7 +237,7 @@ inline void resdualNorm(const Grid* xgrd, const Grid * fgrd, double* norm)
 	//size_t j;
 	double sum = 0.0;
 	//std::cout << "***************:: Residual= ";
-#pragma omp parallel firstprivate(dimX,dimY,midX,midY,hx,hy,r) reduction(+: sum)
+#pragma omp parallel reduction(+: sum) //firstprivate(dimX,dimY,midX,midY,hx,hy,r)
 	{
 #pragma omp for
 		for (size_t j = 1; j < dimY; j++)
@@ -270,7 +270,7 @@ inline void errorNorm(const Grid* xgrd, const Grid * sgrd, double* norm)
     size_t dimY = (*xgrd).getYsize();
     double r = 0.0, sum = 0.0;
 	//size_t j;
-#pragma omp parallel firstprivate(dimY, dimX,r) reduction(+: sum)
+#pragma omp parallel reduction(+: sum) // firstprivate(dimY, dimX,r)
 	{
 #pragma omp for
 		for (size_t j = 0; j < dimY; j++)
@@ -292,13 +292,13 @@ void mgsolve(size_t level, size_t &vcycle)
     size_t gdim = pow(2, level) + 1;
     double oldnorm = 0.0, newnorm = 1.0, convrate = 0.0;
     double hsize = (XDOMHIGH - XDOMLOW) / (gdim - 1.0);
-	size_t i = 0;
+	//size_t i = 0;
     init(hsize, level);
 	sGrid = new Grid(gdim, gdim, hsize, hsize, true);
-#pragma omp parallel private(i) firstprivate(gdim,hsize)
+#pragma omp parallel //private(i) firstprivate(gdim,hsize)
 	{
 #pragma omp for
-		for (i = 0; i < gdim; i++)
+		for (size_t i = 0; i < gdim; i++)
 		{
 			//#pragma omp parallel for
 			for (size_t j = 0; j < gdim; j++)
