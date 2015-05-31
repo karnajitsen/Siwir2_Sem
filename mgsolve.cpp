@@ -280,10 +280,10 @@ void mgsolve(size_t level, size_t &vcycle)
     init(hsize, level);
     sGrid = new Grid(gdim, gdim, hsize, hsize, true);
 	//std::cout << "22222";
-	#pragma omp parallel for
+	//#pragma omp parallel for
     for (size_t i = 0; i < gdim; i++)
     {
-		//#pragma omp parallel for
+		#pragma omp parallel for
         for (size_t j = 0; j < gdim; j++)
         {
            (*sGrid)(j, i) = (*sGrid).gxy(-1.0+j*hsize, -1.0+i*hsize);
@@ -363,7 +363,7 @@ int main(int argc, char** argv)
     std::ofstream	fOut1(fname1);
     std::string fnames1 = std::string("data/Dirichlet/exactsolution_h_") + std::string(to_string(gdim - 1)) + std::string(".txt");
     std::ofstream	fOutsolt1(fnames1);
-#pragma omp parallel 
+#pragma omp parallel for
     for (size_t y = 0; y < gdim; ++y) {
     for (size_t x = 0; x < gdim; ++x) {
 
