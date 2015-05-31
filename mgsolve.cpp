@@ -69,7 +69,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 	}
 	cout << '\n';
 	}*/
-	omp_set_num_threads(4);
+	//omp_set_num_threads(16);
 	int tid = omp_get_num_threads();
 	int tid1 = omp_get_thread_num();
 	std::cout << "NOt dummy region " << tid << " " << std::endl;
@@ -117,6 +117,9 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 #pragma omp parallel for
         for (size_t j = 1; j < dimY - 1; j++)
         {
+			tid1 = omp_get_num_threads();
+			tid = omp_get_num_threads();
+			std::cout << "inside smooth for loop 2 " << tid1 << " " << tid << std::endl;
             size_t l = (j & 0x1) + 1;
 		    for (size_t k = l; k < dimX - 1; k += 2)
             {
@@ -158,6 +161,9 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 #pragma omp parallel for
     for (size_t i = 1; i < ylen; i++)
     {
+		int tid1 = omp_get_num_threads();
+		int tid = omp_get_num_threads();
+		std::cout << "inside restriction residual for " << tid1 << " " << tid << std::endl;
         for (size_t j = 1; j < xlen; j++)
         {
 			
@@ -177,7 +183,9 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 #pragma omp parallel for
     for (size_t i = 1; i < rylen; i++)
     {
-
+		int tid1 = omp_get_num_threads();
+		int tid = omp_get_num_threads();
+		std::cout << "inside restriction for " << tid1 << " " << tid << std::endl;
         for (size_t j = 1; j < rxlen; j++)
         {
 			if ((i == midY && j < midX) || i != midY)
@@ -219,6 +227,9 @@ inline void interpolate(Grid * srcgrd, Grid * tgtgrd)
 #pragma omp parallel for
     for (size_t i = 1; i < tylen - 1; i+=2)
     {
+		int tid1 = omp_get_num_threads();
+		int tid = omp_get_num_threads();
+		std::cout << "inside interpoalte for " << tid1 << " " << tid << std::endl;
 		size_t l = i * 0.5;
         for (size_t j = 1; j < txlen - 1; j+=2)
         {
@@ -254,6 +265,9 @@ inline void resdualNorm(const Grid* xgrd, const Grid * fgrd, double* norm)
 	#pragma omp parallel for
     for (size_t j = 1; j < dimY; j++)
     {
+		int tid1 = omp_get_num_threads();
+		int tid = omp_get_num_threads();
+		std::cout << "inside residual for " << tid1 << " " << tid << std::endl;
         for (size_t k = 1; k < dimX; k++)
         {
 			if ((j == midY && k < midX) || j != midY)
@@ -353,7 +367,7 @@ int main(int argc, char** argv)
         exit(0);
     }
 
-	omp_set_num_threads(4);
+	omp_set_num_threads(16);
 
 	
 	#pragma omp parallel 
