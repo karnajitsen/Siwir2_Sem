@@ -292,7 +292,7 @@ void mgsolve(size_t level, size_t &vcycle)
     size_t gdim = pow(2, level) + 1;
     double oldnorm = 0.0, newnorm = 1.0, convrate = 0.0;
     double hsize = (XDOMHIGH - XDOMLOW) / (gdim - 1.0);
-	//size_t i = 0;
+	size_t i = 0;
     init(hsize, level);
 	sGrid = new Grid(gdim, gdim, hsize, hsize, true);
 #pragma omp parallel //private(i) firstprivate(gdim,hsize)
