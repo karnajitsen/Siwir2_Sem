@@ -293,8 +293,8 @@ void mgsolve(size_t level, size_t &vcycle)
 	size_t i = 0;
     init(hsize, level);
 	sGrid = new Grid(gdim, gdim, hsize, hsize, true);
-#pragma omp parallel private(i) firstprivate(gdim,hsize)
-	{
+//#pragma omp parallel private(i) firstprivate(gdim,hsize)
+	//{
 #pragma omp parallel for
 		for (i = 0; i < gdim; i++)
 		{
@@ -304,7 +304,7 @@ void mgsolve(size_t level, size_t &vcycle)
 				(*sGrid)(j, i) = (*sGrid).gxy(-1.0 + j*hsize, -1.0 + i*hsize);
 			}
 		}
-	}
+	//}
 	
 	for ( i = 1; newnorm > TOLERR; i++)
     {
@@ -376,8 +376,7 @@ int main(int argc, char** argv)
     std::string fnames1 = std::string("data/Dirichlet/exactsolution_h_") + std::string(to_string(gdim - 1)) + std::string(".txt");
     std::ofstream	fOutsolt1(fnames1);
 	std::cout << "\n\nWriting solution to the file...\n\n";
-#pragma omp parallel firstprivate(gdim,hsize) 
-	{
+
 #pragma omp parallel for
 		for (size_t y = 0; y < gdim; ++y) {
 			for (size_t x = 0; x < gdim; ++x) {
@@ -388,7 +387,7 @@ int main(int argc, char** argv)
 			fOut1 << std::endl;
 			fOutsolt1 << std::endl;
 		}
-	}
+	
 		fOut1.close();
 		fOutsolt1.close();
 	
