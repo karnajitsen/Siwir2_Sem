@@ -84,7 +84,7 @@ public:
     {
 		size_t x = sizeX - 1;
 		size_t y = sizeY - 1;
-	#pragma omp parallel
+#pragma omp parallel firstprivate(x,y)
 		{
 	#pragma omp for 
 			for (size_t i = 1; i < y; i++)
