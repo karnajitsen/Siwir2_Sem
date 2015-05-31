@@ -263,7 +263,7 @@ inline void interpolate(Grid * srcgrd, Grid * tgtgrd)
 
 
 
-inline void errorNorm(const Grid* xgrd, const Grid * sgrd, double* norm)
+inline double errorNorm(const Grid* xgrd, const Grid * sgrd)
 {
 
     size_t dimX = (*xgrd).getXsize();
@@ -284,13 +284,13 @@ inline void errorNorm(const Grid* xgrd, const Grid * sgrd, double* norm)
 		}
 	}
 
-    *norm = sqrt(sum / dimX / dimY);
+    return sqrt(sum / dimX / dimY);
 }
 
 void mgsolve(size_t level)
 {
     size_t gdim = pow(2, level) + 1;
-    double oldnorm = 0.0, newnorm = 1.0, convrate = 0.0;
+    double newnorm = 1.0;
     double hsize = (XDOMHIGH - XDOMLOW) / (gdim - 1.0);
 	size_t i = 0;
     init(hsize, level);
@@ -298,7 +298,7 @@ void mgsolve(size_t level)
 #pragma omp parallel private(i) firstprivate(gdim,hsize)
 	{
 #pragma omp for
-		for (size_t k = 0; k < gdim; i++)
+		for (size_t k = 0; k < gdim; k++)
 		{
 			//#pragma omp parallel for
 			for (size_t j = 0; j < gdim; j++)
@@ -324,7 +324,7 @@ void mgsolve(size_t level)
             (*fGrids[j]).reset();
         }
 
-       	errorNorm(xGrids[0], sGrid, &newnorm);
+		newnorm = errorNorm(xGrids[0], sGrid);
 		//std::cout << "Dirichlet:: Error L2 Norm for h as 1/" << gdim - 1 << " = " << newnorm << "\n\n";	
 
     }
