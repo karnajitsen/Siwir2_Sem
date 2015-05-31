@@ -24,7 +24,7 @@ void init(double hsize, const size_t level)
     bool flag = true;
     xGrids = (Grid**) memalign(ALLIGNMENT, level*sizeof(Grid*));
     fGrids = (Grid**) memalign(ALLIGNMENT, level*sizeof(Grid*));
-//#pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < level; i++)
     {
         xGrids[i] = new Grid(xdim, ydim, hsize, hsize, flag);
