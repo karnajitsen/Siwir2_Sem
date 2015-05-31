@@ -93,7 +93,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 
     for (size_t i = 0; i < iter; i++)
     {
-#pragma omp parallel
+#pragma omp parallel num_threads(4)
 		{
 			tid1 = omp_get_thread_num();
 			std::cout << "insode smooth for " << tid1 << std::endl;
