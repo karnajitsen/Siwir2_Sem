@@ -75,27 +75,27 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 	std::cout << "NOt dummy region " << tid << " " << std::endl;
 
 
-	
-		int finalImage[12][12];
-		//int xx, yy;
-		 tid = omp_get_num_threads();
-		 tid1 = omp_get_thread_num();
-		std::cout << "Dummy region " << tid << " " << tid1 << std::endl;
-#pragma omp parallel for
-		for (int xx = 0; xx < 12; xx++)
-		{
-			for (int yy = 0; yy < 12; yy++)
-			{
-				finalImage[xx][yy] = 1;
-			}
-		}
-	
+//	
+//		int finalImage[12][12];
+//		//int xx, yy;
+//		 tid = omp_get_num_threads();
+//		 tid1 = omp_get_thread_num();
+//		std::cout << "Dummy region " << tid << " " << tid1 << std::endl;
+//#pragma omp parallel for
+//		for (int xx = 0; xx < 12; xx++)
+//		{
+//			for (int yy = 0; yy < 12; yy++)
+//			{
+//				finalImage[xx][yy] = 1;
+//			}
+//		}
+//	
 
     for (size_t i = 0; i < iter; i++)
     {
 #pragma omp parallel num_threads(4)
 		{
-			tid1 = omp_get_thread_num();
+			tid1 = omp_get_num_threads();
 			std::cout << "insode smooth for " << tid1 << std::endl;
 	#pragma omp for
 			for (size_t j = 1; j < dimY - 1; j++)
@@ -103,8 +103,8 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 				size_t l = ((j + 1) & 0x1) + 1;
 				for (size_t k = l; k < dimX - 1; k += 2)
 				{
-					if (j == midY && k >= midX)
-						continue;
+					//if (j == midY && k >= midX)
+						//continue;
 					(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + alpha * ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + beta * ((*xgrd)(k, j + 1)
 						+ (*xgrd)(k, j - 1))) * center;
 
