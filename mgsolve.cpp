@@ -295,7 +295,7 @@ void mgsolve(size_t level)
 	size_t i = 0;
     init(hsize, level);
 	sGrid = new Grid(gdim, gdim, hsize, hsize, true);
-#pragma omp parallel private(i) firstprivate(gdim,hsize)
+#pragma omp parallel firstprivate(gdim,hsize)
 	{
 #pragma omp for
 		for (size_t k = 0; k < gdim; k++)
