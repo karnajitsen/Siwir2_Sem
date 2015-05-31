@@ -139,10 +139,10 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 	size_t midY = ylen / 2;
 	size_t midX = xlen / 2;
 
-
+	std::cout << "***************:: restriction= ";
 	Grid tmpgrd(xlen + 1, ylen + 1, hx, hy, false);
 	size_t i = 1;
-#pragma omp parallel private(i) firstprivate(xlen,ylen,midX,midY,alpha,beta,center,fgrd,xgrd) shared(tmpgrd) 
+#pragma omp parallel private(i) firstprivate(xlen,ylen,midX,midY,alpha,beta,center) shared(tmpgrd) 
 	{
 #pragma omp for
 		for (i = 1; i < ylen; i++)
@@ -194,7 +194,7 @@ inline void interpolate(Grid * srcgrd, Grid * tgtgrd)
 	size_t tylen = (*tgtgrd).getYsize()-1;
 	
 	size_t i;
-
+	std::cout << "***************:: interpolation= ";
 #pragma omp parallel private(i) firstprivate(txlen,tylen) 
 	{
 #pragma omp for
@@ -236,6 +236,7 @@ inline void resdualNorm(const Grid* xgrd, const Grid * fgrd, double* norm)
 	size_t midX = dimX / 2;
 	size_t j;
 	*norm = 0.0;
+	std::cout << "***************:: Residual= ";
 #pragma omp parallel private(j) firstprivate(dimX,dimY,midX,midY,hx,hy) 
 	{
 #pragma omp for
