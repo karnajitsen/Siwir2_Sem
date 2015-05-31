@@ -190,7 +190,7 @@ inline void interpolate(Grid * srcgrd, Grid * tgtgrd)
 
     }*/
 
-//#pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 1; i < tylen - 1; i+=2)
     {
 		size_t l = i * 0.5;
