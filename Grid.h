@@ -7,7 +7,7 @@
 #include <string>
 #include<malloc.h>
 #include <omp.h>
-#define LD 64
+#define LD 32
 #define ALLIGNMENT 32
 using namespace std;
 //#define M_PI 3.14
