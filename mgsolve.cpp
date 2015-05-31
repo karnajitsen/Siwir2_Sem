@@ -54,42 +54,11 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
     size_t dimY = (*xgrd).getYsize();
     double hx = (*xgrd).getHx();
     double hy = (*xgrd).getHy();
-    double	alpha = 1.0;
-    double	beta = 1.0;
-    double	center = 1.0 / (2.0 * alpha + 2.0 * beta);
+   // double	alpha = 1.0;
+   // double	beta = 1.0;
+    //double	center = 1.0 / (2.0 * alpha + 2.0 * beta);
 	size_t midY = (dimY - 1) / 2;
 	size_t midX = (dimX - 1) / 2;
-
-	/*cout << "====B4 smooth=== \n\n";
-	for (size_t j = 0; j < dimX; j++)
-	{
-		for (size_t k = 0; k < dimY; k++)
-	{
-	cout << (*xgrd)(k, j) << " ";
-	}
-	cout << '\n';
-	}*/
-	//omp_set_num_threads(16);
-	//int tid = omp_get_num_threads();
-	//int tid1 = omp_get_thread_num();
-	//std::cout << "NOt dummy region " << tid << " " << std::endl;
-
-
-//	
-//		int finalImage[12][12];
-//		//int xx, yy;
-//		 tid = omp_get_num_threads();
-//		 tid1 = omp_get_thread_num();
-//		std::cout << "Dummy region " << tid << " " << tid1 << std::endl;
-//#pragma omp parallel for
-//		for (int xx = 0; xx < 12; xx++)
-//		{
-//			for (int yy = 0; yy < 12; yy++)
-//			{
-//				finalImage[xx][yy] = 1;
-//			}
-//		}
-//	
 
 	timeval start, end;
 	gettimeofday(&start, 0);
@@ -99,7 +68,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 //#pragma omp parallel num_threads(4)
 	//	{
 		size_t j = 1;
-	#pragma omp parallel private(j) firstprivate(dimY,dimX,midX,midY,alpha,beta,center)
+#pragma omp parallel private(j) firstprivate(dimY,dimX,midX,midY,(*fgrd),hx,hy) shared((*xgrd))
 		{
 		#pragma omp for
 			for ( j = 1; j < dimY - 1; j++)
@@ -113,14 +82,14 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 				{
 					if ((j == midY && k < midX) || j!=midY)
 					{
-						(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + alpha * ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + beta * ((*xgrd)(k, j + 1)
-							+ (*xgrd)(k, j - 1))) * center;
+						(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) +  ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) +  ((*xgrd)(k, j + 1)
+							+ (*xgrd)(k, j - 1))) * 0.25;
 					}
 				}
 
 			}
 		}
-#pragma omp parallel private(j) firstprivate(dimY,dimX,midX,midY,alpha,beta,center) 
+#pragma omp parallel private(j) firstprivate(dimY,dimX,midX,midY,(*fgrd),hx,hy) shared((*xgrd))
 		{
 	#pragma omp for
 			for (j = 1; j < dimY - 1; j++)
@@ -135,8 +104,8 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 				for (size_t k = l; k < dimX - 1; k += 2)
 				{
 					if ((j == midY && k < midX) || j != midY)
-						(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + alpha * ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + beta * ((*xgrd)(k, j + 1)
-						+ (*xgrd)(k, j - 1))) * center;
+						(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) +  ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + ((*xgrd)(k, j + 1)
+						+ (*xgrd)(k, j - 1))) * 0.25;
 
 
 				}
@@ -171,92 +140,82 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 	size_t midX = xlen / 2;
 
 
-    Grid tmpgrd(xlen + 1, ylen + 1, hx, hy, false);
+	Grid tmpgrd(xlen + 1, ylen + 1, hx, hy, false);
+	size_t i = 1;
+#pragma omp parallel private(i) firstprivate(xlen,ylen,midX,midY,alpha,beta,center,(*fgrd),(*xgrd)) shared(tmpgrd) 
+	{
+#pragma omp for
+		for (i = 1; i < ylen; i++)
+		{
+			/*int tid1 = omp_get_num_threads();
+			int tid = omp_get_num_threads();
+			std::cout << "inside restriction residual for " << tid1 << " " << tid << std::endl;*/
+			for (size_t j = 1; j < xlen; j++)
+			{
+				if ((i == midY && j < midX) || i != midY)
+					tmpgrd(j, i) = (*fgrd)(j, i) + alpha*((*xgrd)(j + 1, i) + (*xgrd)(j - 1, i)) + beta * ((*xgrd)(j, i + 1)
+					+ (*xgrd)(j, i - 1)) - (*xgrd)(j, i) * center;
+			}
 
-#pragma omp parallel for
-    for (size_t i = 1; i < ylen; i++)
-    {
-		/*int tid1 = omp_get_num_threads();
-		int tid = omp_get_num_threads();
-		std::cout << "inside restriction residual for " << tid1 << " " << tid << std::endl;*/
-        for (size_t j = 1; j < xlen; j++)
-        {
-			
-			if ((i == midY && j < midX) || i != midY)
-            tmpgrd(j, i) = (*fgrd)(j, i) + alpha*((*xgrd)(j + 1, i) + (*xgrd)(j - 1, i)) + beta * ((*xgrd)(j, i + 1)
-                + (*xgrd)(j, i - 1)) - (*xgrd)(j, i) * center;
-        }
 
-
-    }
+		}
+	}
 
     size_t rxlen = (*rgrid).getXsize() - 1;
     size_t rylen = (*rgrid).getYsize() - 1;
 
 	midY = rylen / 2;
 	midX = rxlen / 2;
-#pragma omp parallel for
-    for (size_t i = 1; i < rylen; i++)
-    {
-		/*int tid1 = omp_get_num_threads();
-		int tid = omp_get_num_threads();
-		std::cout << "inside restriction for " << tid1 << " " << tid << std::endl;*/
-        for (size_t j = 1; j < rxlen; j++)
-        {
-			if ((i == midY && j < midX) || i != midY)
-            (*rgrid)(j, i) = (tmpgrd(2 * j - 1, 2 * i - 1) + tmpgrd(2 * j - 1, 2 * i + 1) +
-                tmpgrd(2 * j + 1, 2 * i - 1) + tmpgrd(2 * j + 1, 2 * i + 1) +
-                2.0*(tmpgrd(2 * j, 2 * i - 1) + tmpgrd(2 * j, 2 * i + 1) +
-                tmpgrd(2 * j - 1, 2 * i) + tmpgrd(2 * j + 1, 2 * i)) + 4.0 * tmpgrd(2 * j, 2 * i)) / 16.0;
-        }
+#pragma omp parallel private(i) firstprivate(rxlen,rylen,midX,midY,tmpgrd) shared((*rgrid))
+	{
+#pragma omp for
+		for (i = 1; i < rylen; i++)
+		{
+			/*int tid1 = omp_get_num_threads();
+			int tid = omp_get_num_threads();
+			std::cout << "inside restriction for " << tid1 << " " << tid << std::endl;*/
+			for (size_t j = 1; j < rxlen; j++)
+			{
+				if ((i == midY && j < midX) || i != midY)
+					(*rgrid)(j, i) = (tmpgrd(2 * j - 1, 2 * i - 1) + tmpgrd(2 * j - 1, 2 * i + 1) +
+					tmpgrd(2 * j + 1, 2 * i - 1) + tmpgrd(2 * j + 1, 2 * i + 1)) * 0.0625 +
+					0.125 *(tmpgrd(2 * j, 2 * i - 1) + tmpgrd(2 * j, 2 * i + 1) +
+					tmpgrd(2 * j - 1, 2 * i) + tmpgrd(2 * j + 1, 2 * i)) + 0.25 * tmpgrd(2 * j, 2 * i);
+			}
 
-    }
-
+		}
+	}
    }
 
 inline void interpolate(Grid * srcgrd, Grid * tgtgrd)
 {
     //size_t len = (*srcgrd).getXsize() - 1;
-    size_t txlen = (*tgtgrd).getXsize();
-	size_t tylen = (*tgtgrd).getYsize();
-	/*double hx = (*tgtgrd).getHx();
+    size_t txlen = (*tgtgrd).getXsize()-1;
+	size_t tylen = (*tgtgrd).getYsize()-1;
+	
+	size_t i;
 
-    Grid tmpgrd(txlen, txlen, hx, hx, false);
-
-
-    for (size_t j = 0; j < len; j++)
-    {
-        size_t k = 2 * j;
-        for (size_t i = 0; i < len; i++)
-        {
-            size_t l = 2 * i;
-            tmpgrd(l, k) = (*srcgrd)(i, j);
-            tmpgrd(l, k + 1) = 0.5*((*srcgrd)(i, j) + (*srcgrd)(i, j + 1));
-            tmpgrd(l + 1, k) = 0.5*((*srcgrd)(i, j) + (*srcgrd)(i + 1, j));
-            tmpgrd(l + 1, k + 1) = 0.25*((*srcgrd)(i, j) + (*srcgrd)(i + 1, j) + (*srcgrd)(i, j + 1)
-                + (*srcgrd)(i + 1, j + 1));
-        }
-
-    }*/
-
-#pragma omp parallel for
-    for (size_t i = 1; i < tylen - 1; i+=2)
-    {
-		/*int tid1 = omp_get_num_threads();
-		int tid = omp_get_num_threads();
-		std::cout << "inside interpoalte for " << tid1 << " " << tid << std::endl;*/
-		size_t l = i * 0.5;
-        for (size_t j = 1; j < txlen - 1; j+=2)
-        {
-			size_t k = j * 0.5;
-			(*tgtgrd)(j, i) += 0.25*((*srcgrd)(k,l) + (*srcgrd)(k + 1, l) + (*srcgrd)(k, l + 1)
-				+ (*srcgrd)(k + 1,l + 1));
-			(*tgtgrd)(j + 1, i) += 0.5*((*srcgrd)(k+1, l) + (*srcgrd)(k + 1, l+1));
+#pragma omp parallel private(i) firstprivate(txlen,tylen) 
+	{
+#pragma omp for
+		for (i = 1; i < tylen; i += 2)
+		{
+			/*int tid1 = omp_get_num_threads();
+			int tid = omp_get_num_threads();
+			std::cout << "inside interpoalte for " << tid1 << " " << tid << std::endl;*/
+			size_t l = i * 0.5;
+			for (size_t j = 1; j < txlen; j += 2)
+			{
+				size_t k = j * 0.5;
+				(*tgtgrd)(j, i) += 0.25*((*srcgrd)(k, l) + (*srcgrd)(k + 1, l) + (*srcgrd)(k, l + 1)
+					+ (*srcgrd)(k + 1, l + 1));
+				(*tgtgrd)(j + 1, i) += 0.5*((*srcgrd)(k + 1, l) + (*srcgrd)(k + 1, l + 1));
 				(*tgtgrd)(j, i + 1) += 0.5*((*srcgrd)(k, l + 1) + (*srcgrd)(k + 1, l + 1));
 				(*tgtgrd)(j + 1, i + 1) += (*srcgrd)(k + 1, l + 1);
-			
-        }
-    }
+
+			}
+		}
+	}
 
 }
 
@@ -268,16 +227,18 @@ inline void resdualNorm(const Grid* xgrd, const Grid * fgrd, double* norm)
     double r = 0.0;
     double hx = (*xgrd).getHx();
     double hy = (*xgrd).getHy();
-    double	alpha = 1.0;
-    double	beta = 1.0;
-    double	center = (2.0 * alpha + 2.0 * beta);
+   // double	alpha = 1.0;
+   // double	beta = 1.0;
+	//double	center = 4.0;
 
 
 	size_t midY = dimY / 2;
 	size_t midX = dimX / 2;
 
 	*norm = 0.0;
-	#pragma omp parallel for
+#pragma omp parallel private(i) firstprivate(dimX,dimY,midX,midY,hx,hy) 
+	{
+#pragma omp for
     for (size_t j = 1; j < dimY; j++)
     {
 		/*int tid1 = omp_get_num_threads();
@@ -286,8 +247,8 @@ inline void resdualNorm(const Grid* xgrd, const Grid * fgrd, double* norm)
         for (size_t k = 1; k < dimX; k++)
         {
 			if ((j == midY && k < midX) || j != midY)
-			r = hx*hy*(*fgrd)(k, j) + alpha*((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + beta * ((*xgrd)(k, j + 1)
-                + (*xgrd)(k, j - 1)) - (*xgrd)(k, j) * center;
+			r = hx*hy*(*fgrd)(k, j) + ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + ((*xgrd)(k, j + 1)
+                + (*xgrd)(k, j - 1)) - (*xgrd)(k, j) * 4.0;
 
             *norm += r*r;
         }
