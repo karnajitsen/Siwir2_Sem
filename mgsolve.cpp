@@ -267,7 +267,7 @@ inline void errorNorm(const Grid* xgrd, const Grid * sgrd, double* norm)
     size_t dimX = (*xgrd).getXsize();
     size_t dimY = (*xgrd).getYsize();
     double r = 0.0, sum = 0.0;
-	size_t j
+	size_t j;
 #pragma omp parallel private(j) firstprivate(dimY, dimX,r) reduction(+:sum)
 	{
 #pragma omp parallel for
