@@ -16,7 +16,7 @@ Grid ** fGrids = nullptr;
 Grid *sGrid = nullptr;
 //bool isNeumann = false;
 
-void init(double hsize, const size_t level)
+inline void init(double hsize, const size_t level)
 {
     size_t je = level;
     size_t ydim = pow(2, je) + 1;
@@ -127,7 +127,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 	}*/
 }
 
-void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
+inline void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 {
     size_t xlen = (*xgrd).getXsize() - 1;
     size_t ylen = (*xgrd).getYsize() - 1;
@@ -219,47 +219,47 @@ inline void interpolate(Grid * srcgrd, Grid * tgtgrd)
 
 }
 
-inline void resdualNorm(const Grid* xgrd, const Grid * fgrd, double* norm)
-{
-
-    size_t dimX = (*xgrd).getXsize() - 1;
-    size_t dimY = (*xgrd).getYsize() - 1;
-    double r = 0.0;
-    double hx = (*xgrd).getHx();
-    double hy = (*xgrd).getHy();
-   // double	alpha = 1.0;
-   // double	beta = 1.0;
-	//double	center = 4.0;
-
-
-	size_t midY = dimY / 2;
-	size_t midX = dimX / 2;
-	//size_t j;
-	double sum = 0.0;
-	//std::cout << "***************:: Residual= ";
-#pragma omp parallel reduction(+: sum) firstprivate(dimX,dimY,midX,midY,hx,hy,r)
-	{
-#pragma omp for
-		for (size_t j = 1; j < dimY; j++)
-		{
-			/*int tid1 = omp_get_num_threads();
-			int tid = omp_get_num_threads();
-			std::cout << "inside residual for " << tid1 << " " << tid << std::endl;*/
-			for (size_t k = 1; k < dimX; k++)
-			{
-				if ((j == midY && k < midX) || j != midY)
-				{
-					r = hx*hy*(*fgrd)(k, j) + ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + ((*xgrd)(k, j + 1)
-						+ (*xgrd)(k, j - 1)) - (*xgrd)(k, j) * 4.0;
-
-					sum += r*r;
-				}
-			}
-		}
-	}
-
-        *norm = sqrt(sum / (dimX - 1) / (dimY - 1));
-}
+//inline void resdualNorm(const Grid* xgrd, const Grid * fgrd, double* norm)
+//{
+//
+//    size_t dimX = (*xgrd).getXsize() - 1;
+//    size_t dimY = (*xgrd).getYsize() - 1;
+//    double r = 0.0;
+//    double hx = (*xgrd).getHx();
+//    double hy = (*xgrd).getHy();
+//   // double	alpha = 1.0;
+//   // double	beta = 1.0;
+//	//double	center = 4.0;
+//
+//
+//	size_t midY = dimY / 2;
+//	size_t midX = dimX / 2;
+//	//size_t j;
+//	double sum = 0.0;
+//	//std::cout << "***************:: Residual= ";
+//#pragma omp parallel reduction(+: sum) firstprivate(dimX,dimY,midX,midY,hx,hy,r)
+//	{
+//#pragma omp for
+//		for (size_t j = 1; j < dimY; j++)
+//		{
+//			/*int tid1 = omp_get_num_threads();
+//			int tid = omp_get_num_threads();
+//			std::cout << "inside residual for " << tid1 << " " << tid << std::endl;*/
+//			for (size_t k = 1; k < dimX; k++)
+//			{
+//				if ((j == midY && k < midX) || j != midY)
+//				{
+//					r = hx*hy*(*fgrd)(k, j) + ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + ((*xgrd)(k, j + 1)
+//						+ (*xgrd)(k, j - 1)) - (*xgrd)(k, j) * 4.0;
+//
+//					sum += r*r;
+//				}
+//			}
+//		}
+//	}
+//
+//        *norm = sqrt(sum / (dimX - 1) / (dimY - 1));
+//}
 
 
 
@@ -324,10 +324,10 @@ void mgsolve(size_t level, size_t &vcycle)
             (*fGrids[j]).reset();
         }
 
-        oldnorm = newnorm;
+        /*oldnorm = newnorm;
         resdualNorm(xGrids[0], fGrids[0], &newnorm);
         if (oldnorm != 0.0)
-            convrate = newnorm / oldnorm;
+            convrate = newnorm / oldnorm;*/
 
            // std::cout << "Dirichlet:: Residual L2 Norm after " << i << " V-Cycle = " << newnorm << "\n";
             //std::cout << "Dirichlet:: Covergence rate after " << i << " V-Cycle = " << convrate << "\n\n";
@@ -359,12 +359,12 @@ int main(int argc, char** argv)
 
     timeval start, end;
 
-    std::cout << "Dirichlet:: Level = " << level << "\n\n";
+    //std::cout << "Dirichlet:: Level = " << level << "\n\n";
 
     std::cout << "\n\n =============== Output for Dirichlet Boundary Value Problem 1 ===================\n\n";
-	std::cout << "333";
+	//std::cout << "333";
     gettimeofday(&start, 0);
-	std::cout << "22222";
+	//std::cout << "22222";
     mgsolve(level, vcycle);
 
     gettimeofday(&end, 0);
