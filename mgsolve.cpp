@@ -237,7 +237,7 @@ inline void resdualNorm(const Grid* xgrd, const Grid * fgrd, double* norm)
 	//size_t j;
 	double sum = 0.0;
 	//std::cout << "***************:: Residual= ";
-#pragma omp parallel reduction(+: sum) //firstprivate(dimX,dimY,midX,midY,hx,hy,r)
+#pragma omp parallel reduction(+: sum) firstprivate(dimX,dimY,midX,midY,hx,hy,r)
 	{
 #pragma omp for
 		for (size_t j = 1; j < dimY; j++)
@@ -270,7 +270,7 @@ inline void errorNorm(const Grid* xgrd, const Grid * sgrd, double* norm)
     size_t dimY = (*xgrd).getYsize();
     double r = 0.0, sum = 0.0;
 	//size_t j;
-#pragma omp parallel reduction(+: sum) // firstprivate(dimY, dimX,r)
+#pragma omp parallel reduction(+: sum) firstprivate(dimY, dimX,r)
 	{
 #pragma omp for
 		for (size_t j = 0; j < dimY; j++)
