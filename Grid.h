@@ -42,7 +42,7 @@ public:
         if (bndrYN)
         {
             //double l = - 1.0 + (sizeX - 1.0)*hx;
-	#pragma omp parallel firstprivate(sizeX, ld, hx) shared(data)
+	#pragma omp parallel
 			{
 	#pragma omp for
 				for (int j = 0.0; (size_t)j < sizeX; j++)
@@ -82,7 +82,7 @@ public:
     {
 		size_t x = sizeX - 1;
 		size_t y = sizeY - 1;
-	#pragma omp parallel firstprivate(x,y,ld)
+	#pragma omp parallel
 		{
 	#pragma omp for 
 			for (size_t i = 1; i < y; i++)
