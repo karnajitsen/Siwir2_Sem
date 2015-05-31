@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS= -O3 -Wall -Winline -Wshadow -std=c++11 -fpermissive
+CFLAGS= -O3 -Wall -Winline -Wshadow -std=c++11 -fpermissive -fopenmp
 #CFLAGS= -fpermissive
 LDFLAGS=
 SOURCES=mgsolve.cpp
