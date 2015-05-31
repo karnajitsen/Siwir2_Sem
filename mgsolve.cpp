@@ -342,7 +342,7 @@ int main(int argc, char** argv)
 	int tid = omp_get_num_threads();
 	int tid1 = omp_get_thread_num();
 	std::cout << "Hello world from thread " << tid << " " << tid1 << std::endl;
-#pragma omp parallel for{
+#pragma omp parallel for
 	for (int xx = 0; xx < 12; xx++)
 	{
 		for (int yy = 0; yy < 12; yy++)
@@ -350,7 +350,7 @@ int main(int argc, char** argv)
 			finalImage[xx][yy] = 1;
 		}
 	}
-	}
+	
 	
 
     size_t level = atoi(argv[1]);
