@@ -297,7 +297,6 @@ inline void errorNorm(const Grid* xgrd, const Grid * sgrd, double* norm)
         for (size_t k = 0; k < dimX; k++)
         {
             r = (*sgrd)(k , j) - (*xgrd)(k, j);
-
             *norm += r*r;
         }
 
@@ -368,29 +367,10 @@ int main(int argc, char** argv)
         exit(0);
     }
 
-	omp_set_num_threads(16);
+	//omp_set_num_threads(16);
 
 	
-	#pragma omp parallel 
-	{
-	int finalImage[12][12];
-	//int xx, yy;
-	int tid = omp_get_num_threads();
-	int tid1 = omp_get_thread_num();
-	//std::cout << "Hello world from thread " << tid << " " << tid1 << std::endl;
-
-	for (int xx = 0; xx < 12; xx++)
-	{
-		for (int yy = 0; yy < 12; yy++)
-		{
-			finalImage[xx][yy] = 1;
-		}
-	}
-	}
-	
-	
-
-    size_t level = atoi(argv[1]);
+	size_t level = atoi(argv[1]);
     size_t vcycle = 0;
 
     timeval start, end;
@@ -415,7 +395,6 @@ int main(int argc, char** argv)
     std::string fnames1 = std::string("data/Dirichlet/exactsolution_h_") + std::string(to_string(gdim - 1)) + std::string(".txt");
     std::ofstream	fOutsolt1(fnames1);
 #pragma omp parallel for
-
     for (size_t y = 0; y < gdim; ++y) {
     for (size_t x = 0; x < gdim; ++x) {
 
