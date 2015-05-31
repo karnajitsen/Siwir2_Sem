@@ -266,7 +266,7 @@ inline void errorNorm(const Grid* xgrd, const Grid * sgrd, double* norm)
     *norm = sqrt(*norm / dimX / dimY);
 }
 
-void mgsolve(size_t level, size_t& vcycle)
+void mgsolve(size_t level, size_t &vcycle)
 {
     size_t gdim = pow(2, level) + 1;
     double oldnorm = 0.0, newnorm = 1.0, convrate = 0.0;
@@ -335,7 +335,7 @@ int main(int argc, char** argv)
 	std::cout << "Hello world from thread " << tid << " " << tid1 << std::endl;
 
     size_t level = atoi(argv[1]);
-    size_t vcycle;
+    size_t vcycle = 0;
 
     timeval start, end;
 
