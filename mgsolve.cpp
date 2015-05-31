@@ -103,11 +103,11 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 				size_t l = ((j + 1) & 0x1) + 1;
 				for (size_t k = l; k < dimX - 1; k += 2)
 				{
-					//if (j == midY && k >= midX)
-						//continue;
-					(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + alpha * ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + beta * ((*xgrd)(k, j + 1)
-						+ (*xgrd)(k, j - 1))) * center;
-
+					if ((j == midY && k < midX) || j!=midY)
+					{
+						(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + alpha * ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + beta * ((*xgrd)(k, j + 1)
+							+ (*xgrd)(k, j - 1))) * center;
+					}
 				}
 
 			}
