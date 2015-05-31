@@ -76,8 +76,9 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 
     for (size_t i = 0; i < iter; i++)
     {
-#pragma omp parallel for
+#pragma omp parallel
 		{
+	#pragma omp for
 			for (size_t j = 1; j < dimY - 1; j++)
 			{
 				size_t l = ((j + 1) & 0x1) + 1;
