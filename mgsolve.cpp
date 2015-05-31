@@ -70,26 +70,28 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 	cout << '\n';
 	}*/
 
-	//int tid = omp_get_num_threads();
-	////int tid1 = omp_get_thread_num();
-	//std::cout << "Hello world from thread " << tid << " " << std::endl;
+	int tid = omp_get_num_threads();
+	int tid1 = omp_get_thread_num();
+	std::cout << "Hello world from thread " << tid << " " << std::endl;
 
     for (size_t i = 0; i < iter; i++)
     {
 #pragma omp parallel for
-        for (size_t j = 1; j < dimY - 1; j++)
-        {
-            size_t l = ((j + 1) & 0x1) + 1;
-            for (size_t k = l; k < dimX - 1; k += 2)
-            {
-				if (j == midY && k >= midX)
-					continue;
-                (*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + alpha * ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + beta * ((*xgrd)(k, j + 1)
-                    + (*xgrd)(k, j - 1))) * center;
+		{
+			for (size_t j = 1; j < dimY - 1; j++)
+			{
+				size_t l = ((j + 1) & 0x1) + 1;
+				for (size_t k = l; k < dimX - 1; k += 2)
+				{
+					if (j == midY && k >= midX)
+						continue;
+					(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + alpha * ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + beta * ((*xgrd)(k, j + 1)
+						+ (*xgrd)(k, j - 1))) * center;
 
-            }
+				}
 
-         }
+			}
+		}
 #pragma omp parallel for
         for (size_t j = 1; j < dimY - 1; j++)
         {
@@ -342,7 +344,7 @@ int main(int argc, char** argv)
 	//int xx, yy;
 	int tid = omp_get_num_threads();
 	int tid1 = omp_get_thread_num();
-	std::cout << "Hello world from thread " << tid << " " << tid1 << std::endl;
+	//std::cout << "Hello world from thread " << tid << " " << tid1 << std::endl;
 
 	for (int xx = 0; xx < 12; xx++)
 	{
@@ -380,6 +382,7 @@ int main(int argc, char** argv)
     std::string fnames1 = std::string("data/Dirichlet/exactsolution_h_") + std::string(to_string(gdim - 1)) + std::string(".txt");
     std::ofstream	fOutsolt1(fnames1);
 #pragma omp parallel for
+
     for (size_t y = 0; y < gdim; ++y) {
     for (size_t x = 0; x < gdim; ++x) {
 
