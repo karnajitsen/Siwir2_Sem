@@ -70,12 +70,17 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 	cout << '\n';
 	}*/
 
+	int tid = omp_get_num_threads();
+	//int tid1 = omp_get_thread_num();
+	std::cout << "Hello world from thread " << tid << " " << std::endl;
+
     for (size_t i = 0; i < iter; i++)
     {
 #pragma omp for
         for (size_t j = 1; j < dimY - 1; j++)
         {
             size_t l = ((j + 1) & 0x1) + 1;
+#pragma omp for
             for (size_t k = l; k < dimX - 1; k += 2)
             {
 				if (j == midY && k >= midX)
@@ -90,6 +95,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
         for (size_t j = 1; j < dimY - 1; j++)
         {
             size_t l = (j & 0x1) + 1;
+		#pragma omp for
             for (size_t k = l; k < dimX - 1; k += 2)
             {
 				if (j == midY && k >= midX)
@@ -127,6 +133,7 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 
 
     Grid tmpgrd(xlen + 1, ylen + 1, hx, hy, false);
+
 #pragma omp parallel for
     for (size_t i = 1; i < ylen; i++)
     {
