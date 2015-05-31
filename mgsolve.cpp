@@ -349,7 +349,8 @@ int main(int argc, char** argv)
 		{
 			finalImage[xx][yy] = 1;
 		}
-	}}
+	}
+	}
 	
 
     size_t level = atoi(argv[1]);
