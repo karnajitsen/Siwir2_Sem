@@ -336,13 +336,13 @@ int main(int argc, char** argv)
 	omp_set_num_threads(4);
 
 	
-
+	#pragma omp parallel {
 	int finalImage[12][12];
 	//int xx, yy;
 	int tid = omp_get_num_threads();
 	int tid1 = omp_get_thread_num();
 	std::cout << "Hello world from thread " << tid << " " << tid1 << std::endl;
-#pragma omp parallel {
+
 	for (int xx = 0; xx < 12; xx++)
 	{
 		for (int yy = 0; yy < 12; yy++)
