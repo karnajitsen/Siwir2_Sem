@@ -68,7 +68,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 //#pragma omp parallel num_threads(4)
 	//	{
 		
-#pragma omp parallel firstprivate(dimY,dimX,midX,midY,hx,hy) shared(xgrd)
+#pragma omp parallel firstprivate(dimY,dimX,midX,midY,hx,hy)
 		{
 		#pragma omp for
 			for ( size_t j = 1; j < dimY - 1; j++)
@@ -89,7 +89,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 
 			}
 		}
-#pragma omp parallel firstprivate(dimY,dimX,midX,midY,hx,hy) shared(xgrd)
+#pragma omp parallel firstprivate(dimY,dimX,midX,midY,hx,hy)
 		{
 	#pragma omp for
 			for (size_t j = 1; j < dimY - 1; j++)
@@ -142,7 +142,7 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 	//std::cout << "***************:: restriction= ";
 	Grid tmpgrd(xlen + 1, ylen + 1, hx, hy, false);
 	size_t i = 1;
-#pragma omp parallel private(i) firstprivate(xlen,ylen,midX,midY,alpha,beta,center) shared(tmpgrd)
+#pragma omp parallel private(i) firstprivate(xlen,ylen,midX,midY,alpha,beta,center)
 	{
 #pragma omp for
 		for (i = 1; i < ylen; i++)
