@@ -60,8 +60,8 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 	size_t midY = (dimY - 1) / 2;
 	size_t midX = (dimX - 1) / 2;
 
-	timeval start, end;
-	gettimeofday(&start, 0);
+	//timeval start, end;
+	//gettimeofday(&start, 0);
 
     for (size_t i = 0; i < iter; i++)
     {
@@ -113,8 +113,8 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 		}
     }
 
-	gettimeofday(&end, 0);
-	double elapsed = 0.000001 * ((double)((end.tv_sec - start.tv_sec) * 1000000 + end.tv_usec - start.tv_usec));
+	//gettimeofday(&end, 0);
+	//double elapsed = 0.000001 * ((double)((end.tv_sec - start.tv_sec) * 1000000 + end.tv_usec - start.tv_usec));
 	//std::cout << "***************:: Time spend for Smoothing= " << elapsed << '\n';
 	/*cout << "====After smooth=== \n\n";
 	for (size_t j = 0; j < dimX; j++)
@@ -329,10 +329,10 @@ void mgsolve(size_t level, size_t &vcycle)
         if (oldnorm != 0.0)
             convrate = newnorm / oldnorm;
 
-            std::cout << "Dirichlet:: Residual L2 Norm after " << i << " V-Cycle = " << newnorm << "\n";
-            std::cout << "Dirichlet:: Covergence rate after " << i << " V-Cycle = " << convrate << "\n\n";
+           // std::cout << "Dirichlet:: Residual L2 Norm after " << i << " V-Cycle = " << newnorm << "\n";
+            //std::cout << "Dirichlet:: Covergence rate after " << i << " V-Cycle = " << convrate << "\n\n";
 		errorNorm(xGrids[0], sGrid, &newnorm);
-		std::cout << "Dirichlet:: Error L2 Norm for h as 1/" << gdim - 1 << " = " << newnorm << "\n\n";	
+		//std::cout << "Dirichlet:: Error L2 Norm for h as 1/" << gdim - 1 << " = " << newnorm << "\n\n";	
 
     }
     vcycle = i;
