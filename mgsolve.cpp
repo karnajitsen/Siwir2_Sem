@@ -115,7 +115,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 
 	gettimeofday(&end, 0);
 	double elapsed = 0.000001 * ((double)((end.tv_sec - start.tv_sec) * 1000000 + end.tv_usec - start.tv_usec));
-	std::cout << "***************:: Time spend for Smoothing= " << elapsed << '\n';
+	//std::cout << "***************:: Time spend for Smoothing= " << elapsed << '\n';
 	/*cout << "====After smooth=== \n\n";
 	for (size_t j = 0; j < dimX; j++)
 	{
@@ -139,7 +139,7 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 	size_t midY = ylen / 2;
 	size_t midX = xlen / 2;
 
-	std::cout << "***************:: restriction= ";
+	//std::cout << "***************:: restriction= ";
 	Grid tmpgrd(xlen + 1, ylen + 1, hx, hy, false);
 	size_t i = 1;
 #pragma omp parallel private(i) firstprivate(xlen,ylen,midX,midY,alpha,beta,center)
@@ -194,7 +194,7 @@ inline void interpolate(Grid * srcgrd, Grid * tgtgrd)
 	size_t tylen = (*tgtgrd).getYsize()-1;
 	
 	size_t i;
-	std::cout << "***************:: interpolation= ";
+	//std::cout << "***************:: interpolation= ";
 #pragma omp parallel private(i) firstprivate(txlen,tylen) 
 	{
 #pragma omp for
@@ -236,7 +236,7 @@ inline void resdualNorm(const Grid* xgrd, const Grid * fgrd, double* norm)
 	size_t midX = dimX / 2;
 	size_t j;
 	double sum = 0.0;
-	std::cout << "***************:: Residual= ";
+	//std::cout << "***************:: Residual= ";
 #pragma omp parallel private(j) firstprivate(dimX,dimY,midX,midY,hx,hy,r) reduction(+: sum)
 	{
 #pragma omp for
@@ -330,7 +330,7 @@ void mgsolve(size_t level, size_t &vcycle)
             std::cout << "Dirichlet:: Residual L2 Norm after " << i << " V-Cycle = " << newnorm << "\n";
             std::cout << "Dirichlet:: Covergence rate after " << i << " V-Cycle = " << convrate << "\n\n";
 		errorNorm(xGrids[0], sGrid, &newnorm);
-		std::cout << "Dirichlet:: Error L2 Norm for h as 1/" << gdim - 1 << " = " << newnorm << "\n\n";
+		std::cout << "Dirichlet:: Error L2 Norm for h as 1/" << gdim - 1 << " = " << newnorm << "\n\n";	
 
     }
     vcycle = i;

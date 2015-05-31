@@ -71,11 +71,11 @@ public:
 
     inline double gxy(const double x, const double y)
     {
-		if (x == 0 && y == 0)
+		if (x == 0.0 && y == 0.0)
 			return 0.0;
 		double r = sqrt(sqrt(x*x + y*y));
 		double theta = atan(y / x);
-		return r*sin(theta/2);
+		return r*sin(theta/2.0);
     }
 
     inline void reset()
