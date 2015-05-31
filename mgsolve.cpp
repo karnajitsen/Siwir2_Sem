@@ -225,7 +225,7 @@ inline void resdualNorm(const Grid* xgrd, const Grid * fgrd, double* norm)
 	size_t midX = dimX / 2;
 
 	*norm = 0.0;
-	#pragma omp parallel
+	#pragma omp parallel for
     for (size_t j = 1; j < dimY; j++)
     {
         for (size_t k = 1; k < dimX; k++)
