@@ -8,7 +8,7 @@
 #include<malloc.h>
 #include <omp.h>
 #define LD 16
-#define ALLIGNMENT 256
+#define ALLIGNMENT 16
 using namespace std;
 //#define M_PI 3.14
 class Grid
