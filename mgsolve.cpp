@@ -93,11 +93,12 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 
     for (size_t i = 0; i < iter; i++)
     {
-#pragma omp parallel num_threads(4)
-		{
+//#pragma omp parallel num_threads(4)
+	//	{
 			tid1 = omp_get_num_threads();
-			std::cout << "insode smooth for " << tid1 << std::endl;
-	#pragma omp for
+			tid = omp_get_num_threads();
+			std::cout << "inside smooth for " << tid1 << " " << tid << std::endl;
+	#pragma omp parallel for
 			for (size_t j = 1; j < dimY - 1; j++)
 			{
 				size_t l = ((j + 1) & 0x1) + 1;
@@ -111,15 +112,14 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 				}
 
 			}
-		}
+		//}
 #pragma omp parallel for
         for (size_t j = 1; j < dimY - 1; j++)
         {
             size_t l = (j & 0x1) + 1;
 		    for (size_t k = l; k < dimX - 1; k += 2)
             {
-				if (j == midY && k >= midX)
-					continue;
+				if ((j == midY && k < midX) || j != midY)
 				(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + alpha * ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + beta * ((*xgrd)(k, j + 1)
                     + (*xgrd)(k, j - 1))) * center;
 
@@ -159,8 +159,8 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
     {
         for (size_t j = 1; j < xlen; j++)
         {
-			if (i == midY && j == midX)
-				continue;
+			
+			if ((i == midY && j < midX) || i != midY)
             tmpgrd(j, i) = (*fgrd)(j, i) + alpha*((*xgrd)(j + 1, i) + (*xgrd)(j - 1, i)) + beta * ((*xgrd)(j, i + 1)
                 + (*xgrd)(j, i - 1)) - (*xgrd)(j, i) * center;
         }
@@ -179,9 +179,7 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 
         for (size_t j = 1; j < rxlen; j++)
         {
-			if (i == midY && j == midX)
-				continue;
-
+			if ((i == midY && j < midX) || i != midY)
             (*rgrid)(j, i) = (tmpgrd(2 * j - 1, 2 * i - 1) + tmpgrd(2 * j - 1, 2 * i + 1) +
                 tmpgrd(2 * j + 1, 2 * i - 1) + tmpgrd(2 * j + 1, 2 * i + 1) +
                 2.0*(tmpgrd(2 * j, 2 * i - 1) + tmpgrd(2 * j, 2 * i + 1) +
@@ -257,8 +255,7 @@ inline void resdualNorm(const Grid* xgrd, const Grid * fgrd, double* norm)
     {
         for (size_t k = 1; k < dimX; k++)
         {
-			if (j == midY && k == midX)
-				continue;
+			if ((j == midY && k < midX) || j != midY)
 			r = hx*hy*(*fgrd)(k, j) + alpha*((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + beta * ((*xgrd)(k, j + 1)
                 + (*xgrd)(k, j - 1)) - (*xgrd)(k, j) * center;
 
@@ -302,10 +299,10 @@ void mgsolve(size_t level, size_t &vcycle)
     init(hsize, level);
     sGrid = new Grid(gdim, gdim, hsize, hsize, true);
 	//std::cout << "22222";
-	//#pragma omp parallel for
+	#pragma omp parallel for
     for (size_t i = 0; i < gdim; i++)
     {
-		#pragma omp parallel for
+		//#pragma omp parallel for
         for (size_t j = 0; j < gdim; j++)
         {
            (*sGrid)(j, i) = (*sGrid).gxy(-1.0+j*hsize, -1.0+i*hsize);
