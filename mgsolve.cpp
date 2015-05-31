@@ -99,7 +99,9 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 //#pragma omp parallel num_threads(4)
 	//	{
 		size_t j = 1;
-	#pragma omp parallel private(j) firstprivate(dimY,dimX,midX,midY,alpha,beta,center) for
+	#pragma omp parallel private(j) firstprivate(dimY,dimX,midX,midY,alpha,beta,center)
+		{
+		#pragma omp for
 			for ( j = 1; j < dimY - 1; j++)
 			{
 				/*tid1 = omp_get_num_threads();
@@ -117,26 +119,29 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 				}
 
 			}
-		//}
-#pragma omp parallel private(j) firstprivate(dimY,dimX,midX,midY,alpha,beta,center) for
-        for (j = 1; j < dimY - 1; j++)
-        {
-			/*if (j == 1)
+		}
+#pragma omp parallel private(j) firstprivate(dimY,dimX,midX,midY,alpha,beta,center) 
+		{
+	#pragma omp for
+			for (j = 1; j < dimY - 1; j++)
 			{
+				/*if (j == 1)
+				{
 				int tid1 = omp_get_num_threads();
 				int tid = omp_get_num_threads();
 				std::cout << "inside smooth for loop 2 " << tid1 << " " << tid << std::endl;
-			}*/
-            size_t l = (j & 0x1) + 1;
-		    for (size_t k = l; k < dimX - 1; k += 2)
-            {
-				if ((j == midY && k < midX) || j != midY)
-				(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + alpha * ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + beta * ((*xgrd)(k, j + 1)
-                    + (*xgrd)(k, j - 1))) * center;
+				}*/
+				size_t l = (j & 0x1) + 1;
+				for (size_t k = l; k < dimX - 1; k += 2)
+				{
+					if ((j == midY && k < midX) || j != midY)
+						(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + alpha * ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + beta * ((*xgrd)(k, j + 1)
+						+ (*xgrd)(k, j - 1))) * center;
 
 
-            }
-        }
+				}
+			}
+		}
     }
 
 	gettimeofday(&end, 0);
