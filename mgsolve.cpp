@@ -330,6 +330,7 @@ void mgsolve(size_t level, size_t &vcycle)
             std::cout << "Dirichlet:: Residual L2 Norm after " << i << " V-Cycle = " << newnorm << "\n";
             std::cout << "Dirichlet:: Covergence rate after " << i << " V-Cycle = " << convrate << "\n\n";
 		errorNorm(xGrids[0], sGrid, &newnorm);
+		std::cout << "Dirichlet:: Error L2 Norm for h as 1/" << gdim - 1 << " = " << newnorm << "\n\n";
 
     }
     vcycle = i;
