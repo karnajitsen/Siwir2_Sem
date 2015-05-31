@@ -24,7 +24,7 @@ void init(double hsize, const size_t level)
     bool flag = true;
     xGrids = (Grid**) memalign(ALLIGNMENT, level*sizeof(Grid*));
     fGrids = (Grid**) memalign(ALLIGNMENT, level*sizeof(Grid*));
-#pragma omp parallel for
+//#pragma omp parallel for
     for (size_t i = 0; i < level; i++)
     {
         xGrids[i] = new Grid(xdim, ydim, hsize, hsize, flag);
@@ -127,7 +127,7 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 
 
     Grid tmpgrd(xlen + 1, ylen + 1, hx, hy, false);
-#pragma omp parallel for
+//#pragma omp parallel for
     for (size_t i = 1; i < ylen; i++)
     {
         for (size_t j = 1; j < xlen; j++)
@@ -146,7 +146,7 @@ void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 
 	midY = rylen / 2;
 	midX = rxlen / 2;
-#pragma omp parallel for
+//#pragma omp parallel for
     for (size_t i = 1; i < rylen; i++)
     {
 
@@ -190,7 +190,7 @@ inline void interpolate(Grid * srcgrd, Grid * tgtgrd)
 
     }*/
 
-#pragma omp parallel for
+//#pragma omp parallel for
     for (size_t i = 1; i < tylen - 1; i+=2)
     {
 		size_t l = i * 0.5;
@@ -225,7 +225,7 @@ inline void resdualNorm(const Grid* xgrd, const Grid * fgrd, double* norm)
 	size_t midX = dimX / 2;
 
 	*norm = 0.0;
-	#pragma omp parallel for
+	//#pragma omp parallel for
     for (size_t j = 1; j < dimY; j++)
     {
         for (size_t k = 1; k < dimX; k++)
@@ -251,7 +251,7 @@ inline void errorNorm(const Grid* xgrd, const Grid * sgrd, double* norm)
     size_t dimY = (*xgrd).getYsize();
     double r = 0.0;
     *norm = 0.0;
-	#pragma omp parallel for
+	//#pragma omp parallel for
     for (size_t j = 0; j < dimY; j++)
     {
         for (size_t k = 0; k < dimX; k++)
