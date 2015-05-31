@@ -287,7 +287,7 @@ inline void errorNorm(const Grid* xgrd, const Grid * sgrd, double* norm)
     *norm = sqrt(sum / dimX / dimY);
 }
 
-void mgsolve(size_t level, size_t &vcycle)
+void mgsolve(size_t level)
 {
     size_t gdim = pow(2, level) + 1;
     double oldnorm = 0.0, newnorm = 1.0, convrate = 0.0;
@@ -298,12 +298,12 @@ void mgsolve(size_t level, size_t &vcycle)
 #pragma omp parallel private(i) firstprivate(gdim,hsize)
 	{
 #pragma omp for
-		for (size_t i = 0; i < gdim; i++)
+		for (size_t k = 0; k < gdim; i++)
 		{
 			//#pragma omp parallel for
 			for (size_t j = 0; j < gdim; j++)
 			{
-				(*sGrid)(j, i) = (*sGrid).gxy(-1.0 + j*hsize, -1.0 + i*hsize);
+				(*sGrid)(j, k) = (*sGrid).gxy(-1.0 + j*hsize, -1.0 + k*hsize);
 			}
 		}
 	}
@@ -324,21 +324,13 @@ void mgsolve(size_t level, size_t &vcycle)
             (*fGrids[j]).reset();
         }
 
-        /*oldnorm = newnorm;
-        resdualNorm(xGrids[0], fGrids[0], &newnorm);
-        if (oldnorm != 0.0)
-            convrate = newnorm / oldnorm;*/
-
-           // std::cout << "Dirichlet:: Residual L2 Norm after " << i << " V-Cycle = " << newnorm << "\n";
-            //std::cout << "Dirichlet:: Covergence rate after " << i << " V-Cycle = " << convrate << "\n\n";
-		errorNorm(xGrids[0], sGrid, &newnorm);
+       	errorNorm(xGrids[0], sGrid, &newnorm);
 		//std::cout << "Dirichlet:: Error L2 Norm for h as 1/" << gdim - 1 << " = " << newnorm << "\n\n";	
 
     }
-    vcycle = i;
+   // vcycle = i;   
     
-    
-    std::cout << "Dirichlet:: Error L2 Norm for h as 1/" << gdim - 1 << " = " << newnorm << "\n\n";
+    std::cout << "Dirichlet:: Error L2 Norm for h as 1/" << gdim - 1 << " after " << i << " V-Cycle = " << newnorm << "\n\n";
 }
 
 int main(int argc, char** argv)
@@ -355,7 +347,7 @@ int main(int argc, char** argv)
 
 	
 	size_t level = atoi(argv[1]);
-    size_t vcycle = 0;
+    //size_t vcycle = 0;
 
     timeval start, end;
 
@@ -365,7 +357,7 @@ int main(int argc, char** argv)
 	//std::cout << "333";
     gettimeofday(&start, 0);
 	//std::cout << "22222";
-    mgsolve(level, vcycle);
+    mgsolve(level);
 
     gettimeofday(&end, 0);
     double elapsed = 0.000001 * ((double)((end.tv_sec - start.tv_sec) * 1000000 + end.tv_usec - start.tv_usec));
