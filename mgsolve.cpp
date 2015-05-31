@@ -91,6 +91,9 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 //		}
 //	
 
+	timeval start, end;
+	gettimeofday(&start, 0);
+
     for (size_t i = 0; i < iter; i++)
     {
 //#pragma omp parallel num_threads(4)
@@ -133,6 +136,9 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
         }
     }
 
+	gettimeofday(&end, 0);
+	double elapsed = 0.000001 * ((double)((end.tv_sec - start.tv_sec) * 1000000 + end.tv_usec - start.tv_usec));
+	std::cout << "***************:: Time spend for Smoothing= " << elapsed << '\n';
 	/*cout << "====After smooth=== \n\n";
 	for (size_t j = 0; j < dimX; j++)
 	{
