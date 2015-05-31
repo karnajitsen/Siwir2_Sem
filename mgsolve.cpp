@@ -74,14 +74,14 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 	int tid1 = omp_get_thread_num();
 	std::cout << "NOt dummy region " << tid << " " << std::endl;
 
-#pragma omp parallel 
-	{
+
+	
 		int finalImage[12][12];
 		//int xx, yy;
 		int tid = omp_get_num_threads();
 		int tid1 = omp_get_thread_num();
 		std::cout << "Dummy region " << tid << " " << tid1 << std::endl;
-
+#pragma omp parallel for
 		for (int xx = 0; xx < 12; xx++)
 		{
 			for (int yy = 0; yy < 12; yy++)
@@ -89,7 +89,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 				finalImage[xx][yy] = 1;
 			}
 		}
-	}
+	
 
     for (size_t i = 0; i < iter; i++)
     {
