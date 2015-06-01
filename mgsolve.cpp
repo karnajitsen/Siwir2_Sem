@@ -18,7 +18,8 @@ Grid *sGrid = nullptr;
 
 inline void init(double hsize, const size_t level)
 {
-    size_t je = level;
+	std::cout << "Init";
+	size_t je = level;
     size_t ydim = pow(2, je) + 1;
     size_t xdim = ydim;
     bool flag = true;
@@ -45,6 +46,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 	double hy = (*xgrd).getHy();
 	//size_t midY = (dimY - 1) / 2;
 	//size_t midX = (dimX - 1) / 2;
+	std::cout << "Smooth";
 
 	for (size_t i = 0; i < iter; i++)
 	{
@@ -106,7 +108,7 @@ inline void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
     double	beta = 1.0 / hy / hy;
     double	center = (2.0 * alpha) + (2.0 * beta);
 	
-	//std::cout << "***************:: restriction= ";
+	std::cout << "***************:: restriction= ";
 	Grid tmpgrd(xlen, ylen, hx, hy, false);
 	//size_t i = 1;
 #pragma omp parallel //firstprivate(xlen,ylen,midX,midY,alpha,beta,center)
@@ -158,7 +160,7 @@ inline void interpolate(Grid * srcgrd, Grid * tgtgrd)
 {
       size_t txlen = (*tgtgrd).getXsize()-1;
 	size_t tylen = (*tgtgrd).getYsize()-1;
-	
+	std::cout << "Interpolate";
 #pragma omp parallel  //firstprivate(txlen,tylen) 
 	{
 #pragma omp for
