@@ -313,7 +313,7 @@ int main(int argc, char** argv)
 			fOutsolt1 << std::endl;
 		}
 #pragma omp parallel for
-		for (size_t y = ydim - 2; y >= 0; y--) 
+		for (size_t y = ydim - 2; y >= 0; y = y-1) 
 		{
 			for (size_t x = 0; x < xdim; ++x) 
 			{
