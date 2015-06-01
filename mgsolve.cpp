@@ -59,15 +59,15 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 				for (size_t k = l; k < dimX - 1; k += 2)
 				{
 
-					(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + ((*xgrd)(k, j + 1)
-						+ (*xgrd)(k, j - 1))) * 0.25;
+					(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + (*xgrd)(k, j + 1)
+						+ (*xgrd)(k, j - 1)) * 0.25;
 				}
 
 			}
 #pragma omp for
 			for (size_t k = ((j+1) & 0x1) + 1; k < dimX / 2; k += 2)
 			{
-				(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + 2.0 * (*xgrd)(k, j - 1))) * 0.25;
+				(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + 2.0 * (*xgrd)(k, j - 1)) * 0.25;
 			}
 		}
 #pragma omp parallel //firstprivate(dimY,dimX,midX,midY,hx,hy)
@@ -80,15 +80,15 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 					for (size_t k = l; k < dimX - 1; k += 2)
 					{
 
-						(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + ((*xgrd)(k, j + 1)
-							+ (*xgrd)(k, j - 1))) * 0.25;
+						(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + (*xgrd)(k, j + 1)
+							+ (*xgrd)(k, j - 1)) * 0.25;
 					}			
 				
 			}
 #pragma omp for
 			for (size_t k = (j & 0x1) + 1; k < dimX / 2; k += 2)
 			{
-				(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + ((*xgrd)(k + 1, j) + (*xgrd)(k - 1, j)) + 2.0 * (*xgrd)(k, j - 1))) * 0.25;
+				(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + 2.0 * (*xgrd)(k, j - 1)) * 0.25;
 			}
 
 		}
@@ -187,7 +187,7 @@ inline double errorNorm(const Grid* xgrd, const Grid * sgrd)
     size_t dimY = (*xgrd).getYsize();
 	double r = 0.0, sum = 0.0;
 	//size_t j;
-#pragma omp parallel reduction(+: sum1,sum2) firstprivate(dimY, dimX,r)
+#pragma omp parallel reduction(+: sum) firstprivate(dimY, dimX,r)
 	{
 #pragma omp for
 		for (size_t j = 0; j < dimY; j++)
@@ -292,9 +292,9 @@ int main(int argc, char** argv)
     size_t xdim = (*xGrids[0]).getXsize();
 	size_t ydim = (*xGrids[0]).getYsize();
 
-    std::string fname1 = std::string("data/Dirichlet/solution_h_") + std::string(to_string(gdim - 1)) + std::string(".txt");
+    std::string fname1 = std::string("data/Dirichlet/solution_h_") + std::string(to_string(xdim - 1)) + std::string(".txt");
     std::ofstream	fOut1(fname1);
-    std::string fnames1 = std::string("data/Dirichlet/exactsolution_h_") + std::string(to_string(gdim - 1)) + std::string(".txt");
+    std::string fnames1 = std::string("data/Dirichlet/exactsolution_h_") + std::string(to_string(xdim - 1)) + std::string(".txt");
     std::ofstream	fOutsolt1(fnames1);
 	std::cout << "\n\nWriting solution to the file...\n\n";
 
