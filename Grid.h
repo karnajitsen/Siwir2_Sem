@@ -15,7 +15,7 @@ class Grid
 {
 
     //__declspec(align(128))
-	__declspec(align(32)) double * __restrict data = NULL;
+    double * __restrict data = NULL;
     size_t sizeX, sizeY, ld, totLength;
     double hx, hy;
 
@@ -76,7 +76,6 @@ public:
 		double r = sqrt(sqrt(x*x + y*y));
 
 		double theta = atan2(y, x);
-		//std::cout << "Arctan = " << 360 - abs(180 * theta / 3.14159) << '\n';
 		return r*sin(M_PI - abs(theta) * 0.5);
     }
 
