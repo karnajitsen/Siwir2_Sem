@@ -222,7 +222,7 @@ void mgsolve(size_t level)
 {
     size_t xdim = pow(2, level) + 1, ydim;
     double newnorm = 1.0;
-    double hsize = (XDOMHIGH - XDOMLOW) / (gdim - 1.0);
+    double hsize = (XDOMHIGH - XDOMLOW) / (xdim - 1.0);
 	size_t i = 0;
     init(hsize, level);
 	ydim = (xdim / 2) + 1;
