@@ -40,62 +40,62 @@ inline void init(double hsize, const size_t level)
 
 inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 {
-	size_t dimX = (*xgrd).getXsize();
-	size_t dimY = (*xgrd).getYsize();
-	double hx = (*xgrd).getHx();
-	double hy = (*xgrd).getHy();
-	//size_t midY = (dimY - 1) / 2;
-	//size_t midX = (dimX - 1) / 2;
-	std::cout << "Smooth";
-
-	for (size_t i = 0; i < iter; i++)
-	{
-		
-#pragma omp parallel //firstprivate(dimY,dimX,midX,midY,hx,hy)
-		{
-			size_t j = 0;
-#pragma omp for
-			for (j = 1; j < dimY - 1; j++)
-			{
-				size_t l = ((j+1) & 0x1) + 1;
-				for (size_t k = l; k < dimX - 1; k += 2)
-				{
-
-					(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + (*xgrd)(k, j + 1)
-						+ (*xgrd)(k, j - 1)) * 0.25;
-				}
-
-			}
-#pragma omp for
-			for (size_t k = ((j+1) & 0x1) + 1; k < (dimX / 2) ; k += 2)
-			{
-				(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + 2.0 * (*xgrd)(k, j - 1)) * 0.25;
-			}
-		}
-#pragma omp parallel //firstprivate(dimY,dimX,midX,midY,hx,hy)
-		{
-			size_t j = 0;
-#pragma omp for
-			for (j = 1; j < dimY-1; j++)
-			{
-				size_t l = (j & 0x1) + 1;
-					for (size_t k = l; k < dimX - 1; k += 2)
-					{
-
-						(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + (*xgrd)(k, j + 1)
-							+ (*xgrd)(k, j - 1)) * 0.25;
-					}			
-				
-			}
-#pragma omp for
-			for (size_t k = (j & 0x1) + 1; k < dimX / 2; k += 2)
-			{
-				(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + 2.0 * (*xgrd)(k, j - 1)) * 0.25;
-			}
-
-		}
-	}
-	
+//	size_t dimX = (*xgrd).getXsize();
+//	size_t dimY = (*xgrd).getYsize();
+//	double hx = (*xgrd).getHx();
+//	double hy = (*xgrd).getHy();
+//	//size_t midY = (dimY - 1) / 2;
+//	//size_t midX = (dimX - 1) / 2;
+//	std::cout << "Smooth";
+//
+//	for (size_t i = 0; i < iter; i++)
+//	{
+//		
+//#pragma omp parallel //firstprivate(dimY,dimX,midX,midY,hx,hy)
+//		{
+//			size_t j = 0;
+//#pragma omp for
+//			for (j = 1; j < dimY - 1; j++)
+//			{
+//				size_t l = ((j+1) & 0x1) + 1;
+//				for (size_t k = l; k < dimX - 1; k += 2)
+//				{
+//
+//					(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + (*xgrd)(k, j + 1)
+//						+ (*xgrd)(k, j - 1)) * 0.25;
+//				}
+//
+//			}
+//#pragma omp for
+//			for (size_t k = ((j+1) & 0x1) + 1; k < (dimX / 2) ; k += 2)
+//			{
+//				(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + 2.0 * (*xgrd)(k, j - 1)) * 0.25;
+//			}
+//		}
+//#pragma omp parallel //firstprivate(dimY,dimX,midX,midY,hx,hy)
+//		{
+//			size_t j = 0;
+//#pragma omp for
+//			for (j = 1; j < dimY-1; j++)
+//			{
+//				size_t l = (j & 0x1) + 1;
+//					for (size_t k = l; k < dimX - 1; k += 2)
+//					{
+//
+//						(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + (*xgrd)(k, j + 1)
+//							+ (*xgrd)(k, j - 1)) * 0.25;
+//					}			
+//				
+//			}
+//#pragma omp for
+//			for (size_t k = (j & 0x1) + 1; k < dimX / 2; k += 2)
+//			{
+//				(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + 2.0 * (*xgrd)(k, j - 1)) * 0.25;
+//			}
+//
+//		}
+//	}
+//	
 }
 
 inline void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
@@ -126,7 +126,7 @@ inline void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 
 		}
 #pragma omp for
-		for (size_t j = i; j < xlen - 1; j++)
+		for (size_t j = i; j < xlen / 2; j++)
 		{
 			tmpgrd(j, i) = (*fgrd)(j, i) + alpha*((*xgrd)(j + 1, i) + (*xgrd)(j - 1, i)) + beta * (2.0 * (*xgrd)(j, i - 1)) - (*xgrd)(j, i) * center;
 		}
@@ -210,8 +210,6 @@ inline double errorNorm(const Grid* xgrd, const Grid * sgrd)
 					sum += 4.0*r*r;
 				else
 					sum += r*r;
-
-
 			}
 
 		}
@@ -222,13 +220,13 @@ inline double errorNorm(const Grid* xgrd, const Grid * sgrd)
 
 void mgsolve(size_t level)
 {
-    size_t gdim = pow(2, level) + 1, ydim;
+    size_t xdim = pow(2, level) + 1, ydim;
     double newnorm = 1.0;
     double hsize = (XDOMHIGH - XDOMLOW) / (gdim - 1.0);
 	size_t i = 0;
     init(hsize, level);
-	ydim = (gdim / 2) + 1;
-	sGrid = new Grid(gdim, ydim, hsize, hsize, true);
+	ydim = (xdim / 2) + 1;
+	sGrid = new Grid(xdim, ydim, hsize, hsize, true);
 	//size_t k = 0;
 	std::cout << "solution grid";
 #pragma omp parallel //firstprivate(gdim,hsize)
@@ -237,7 +235,7 @@ void mgsolve(size_t level)
 		for (size_t k = 0; k < ydim; k++)
 		{
 			//#pragma omp parallel for
-			for (size_t j = 0; j < gdim; j++)
+			for (size_t j = 0; j < xdim; j++)
 			{
 				(*sGrid)(j, k) = (*sGrid).gxy(-1.0 + j*hsize, -1.0 + k*hsize);
 			}
@@ -267,7 +265,7 @@ void mgsolve(size_t level)
     }
    // vcycle = i;   
     
-    std::cout << "Dirichlet:: Error L2 Norm for h as 1/" << gdim - 1 << " after " << i << " V-Cycle = " << newnorm << "\n\n";
+    std::cout << "Dirichlet:: Error L2 Norm for h as 1/" << xdim - 1 << " after " << i << " V-Cycle = " << newnorm << "\n\n";
 }
 
 int main(int argc, char** argv)
