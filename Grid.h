@@ -78,8 +78,8 @@ public:
 
     inline void reset()
     {
-		size_t x = sizeX - 1;
-		size_t y = sizeY - 1;
+		size_t x = sizeX -1;
+		size_t y = sizeY ;
 #pragma omp parallel
 		{
 	#pragma omp for 
