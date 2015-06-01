@@ -20,18 +20,18 @@ inline void init(double hsize, const size_t level)
 {
 	std::cout << "Init";
 	size_t je = level;
-    size_t ydim = pow(2, je) + 1;
-    size_t xdim = ydim;
+    size_t xdim = pow(2, je) + 1;
+    size_t ydim = (xdim/2)+1;
     bool flag = true;
     xGrids = (Grid**) memalign(ALLIGNMENT, level*sizeof(Grid*));
     fGrids = (Grid**) memalign(ALLIGNMENT, level*sizeof(Grid*));
 //#pragma omp parallel for
     for (size_t i = 0; i < level; i++)
     {
-        xGrids[i] = new Grid(xdim, (ydim/2)+1, hsize, hsize, flag);
-		fGrids[i] = new Grid(xdim, (ydim / 2) + 1, hsize, hsize, false);
-        ydim = pow(2, --je) + 1;
-        xdim = ydim;
+        xGrids[i] = new Grid(xdim, ydim, hsize, hsize, flag);
+		fGrids[i] = new Grid(xdim, ydim, hsize, hsize, false);
+        xdim = pow(2, --je) + 1;
+		ydim = (xdim / 2) + 1;
         hsize *= 2.0;
         flag = false;
     }
@@ -53,7 +53,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 		
 #pragma omp parallel //firstprivate(dimY,dimX,midX,midY,hx,hy)
 		{
-			size_t j;
+			size_t j = 0;
 #pragma omp for
 			for (j = 1; j < dimY - 1; j++)
 			{
@@ -67,14 +67,14 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 
 			}
 #pragma omp for
-			for (size_t k = ((j+1) & 0x1) + 1; k < dimX / 2; k += 2)
+			for (size_t k = ((j+1) & 0x1) + 1; k < (dimX / 2) ; k += 2)
 			{
 				(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + 2.0 * (*xgrd)(k, j - 1)) * 0.25;
 			}
 		}
 #pragma omp parallel //firstprivate(dimY,dimX,midX,midY,hx,hy)
 		{
-			size_t j;
+			size_t j = 0;
 #pragma omp for
 			for (j = 1; j < dimY-1; j++)
 			{
@@ -131,7 +131,7 @@ inline void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 
 #pragma omp parallel //firstprivate(rxlen,rylen,midX,midY)
 	{
-		size_t i;
+		size_t i = 0;
 #pragma omp for
 		for (i = 1; i < rylen-1; i++)
 		{
@@ -283,9 +283,9 @@ int main(int argc, char** argv)
     //std::cout << "Dirichlet:: Level = " << level << "\n\n";
 
     std::cout << "\n\n =============== Output for Dirichlet Boundary Value Problem 1 ===================\n\n";
-	//std::cout << "333";
+	std::cout << "333";
     gettimeofday(&start, 0);
-	//std::cout << "22222";
+	std::cout << "22222";
     mgsolve(level);
 
     gettimeofday(&end, 0);
