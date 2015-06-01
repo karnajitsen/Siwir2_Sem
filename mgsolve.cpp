@@ -220,52 +220,52 @@ inline double errorNorm(const Grid* xgrd, const Grid * sgrd)
 
 void mgsolve(size_t level)
 {
-    size_t xdim = pow(2, level) + 1, ydim;
-    double newnorm = 1.0;
-    double hsize = (XDOMHIGH - XDOMLOW) / (xdim - 1.0);
-	size_t i = 0;
-    init(hsize, level);
-	ydim = (xdim / 2) + 1;
-	sGrid = new Grid(xdim, ydim, hsize, hsize, true);
-	//size_t k = 0;
-	std::cout << "solution grid";
-#pragma omp parallel //firstprivate(gdim,hsize)
-	{
-#pragma omp for
-		for (size_t k = 0; k < ydim; k++)
-		{
-			//#pragma omp parallel for
-			for (size_t j = 0; j < xdim; j++)
-			{
-				(*sGrid)(j, k) = (*sGrid).gxy(-1.0 + j*hsize, -1.0 + k*hsize);
-			}
-		}
-	}
-	
-	std::cout << "solution grid2";
-	for ( i = 1; newnorm > TOLERR; i++)
-    {
-        for (size_t jl = 0; jl < level - 1; jl++)
-        {
-            smooth(xGrids[jl], fGrids[jl], V1);
-            restriction(xGrids[jl], fGrids[jl], fGrids[jl + 1]);
-        }
-
-        for (size_t j = level - 1; j > 0; j--)
-        {
-            smooth(xGrids[j], fGrids[j], V2);
-            interpolate(xGrids[j], xGrids[j - 1]);
-            (*xGrids[j]).reset();
-            (*fGrids[j]).reset();
-        }
-
-		newnorm = errorNorm(xGrids[0], sGrid);
-		//std::cout << "Dirichlet:: Error L2 Norm for h as 1/" << gdim - 1 << " = " << newnorm << "\n\n";	
-
-    }
-   // vcycle = i;   
-    
-    std::cout << "Dirichlet:: Error L2 Norm for h as 1/" << xdim - 1 << " after " << i << " V-Cycle = " << newnorm << "\n\n";
+//    size_t xdim = pow(2, level) + 1, ydim;
+//    double newnorm = 1.0;
+//    double hsize = (XDOMHIGH - XDOMLOW) / (xdim - 1.0);
+//	size_t i = 0;
+//    init(hsize, level);
+//	ydim = (xdim / 2) + 1;
+//	sGrid = new Grid(xdim, ydim, hsize, hsize, true);
+//	//size_t k = 0;
+//	std::cout << "solution grid";
+//#pragma omp parallel //firstprivate(gdim,hsize)
+//	{
+//#pragma omp for
+//		for (size_t k = 0; k < ydim; k++)
+//		{
+//			//#pragma omp parallel for
+//			for (size_t j = 0; j < xdim; j++)
+//			{
+//				(*sGrid)(j, k) = (*sGrid).gxy(-1.0 + j*hsize, -1.0 + k*hsize);
+//			}
+//		}
+//	}
+//	
+//	std::cout << "solution grid2";
+//	for ( i = 1; newnorm > TOLERR; i++)
+//    {
+//        for (size_t jl = 0; jl < level - 1; jl++)
+//        {
+//            smooth(xGrids[jl], fGrids[jl], V1);
+//            restriction(xGrids[jl], fGrids[jl], fGrids[jl + 1]);
+//        }
+//
+//        for (size_t j = level - 1; j > 0; j--)
+//        {
+//            smooth(xGrids[j], fGrids[j], V2);
+//            interpolate(xGrids[j], xGrids[j - 1]);
+//            (*xGrids[j]).reset();
+//            (*fGrids[j]).reset();
+//        }
+//
+//		newnorm = errorNorm(xGrids[0], sGrid);
+//		//std::cout << "Dirichlet:: Error L2 Norm for h as 1/" << gdim - 1 << " = " << newnorm << "\n\n";	
+//
+//    }
+//   // vcycle = i;   
+//    
+//    std::cout << "Dirichlet:: Error L2 Norm for h as 1/" << xdim - 1 << " after " << i << " V-Cycle = " << newnorm << "\n\n";
 }
 
 int main(int argc, char** argv)
