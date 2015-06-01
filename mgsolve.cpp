@@ -47,13 +47,13 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 	//size_t midY = (dimY - 1) / 2;
 	//size_t midX = (dimX - 1) / 2;
 	std::cout << "Smooth";
-
+	size_t j = 0;
 	for (size_t i = 0; i < iter; i++)
 	{
 		
 #pragma omp parallel //firstprivate(dimY,dimX,midX,midY,hx,hy)
 		{
-			size_t j = 0;
+			
 #pragma omp for
 			for (j = 1; j < dimY - 1; j++)
 			{
@@ -74,7 +74,6 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 		}
 #pragma omp parallel //firstprivate(dimY,dimX,midX,midY,hx,hy)
 		{
-			size_t j = 0;
 #pragma omp for
 			for (j = 1; j < dimY-1; j++)
 			{
