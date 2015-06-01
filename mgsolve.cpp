@@ -222,6 +222,7 @@ void mgsolve(size_t level)
 	ydim = (gdim / 2) + 1;
 	sGrid = new Grid(gdim, ydim, hsize, hsize, true);
 	//size_t k = 0;
+	std::cout << "solution grid";
 #pragma omp parallel //firstprivate(gdim,hsize)
 	{
 #pragma omp for
@@ -235,6 +236,7 @@ void mgsolve(size_t level)
 		}
 	}
 	
+	std::cout << "solution grid2";
 	for ( i = 1; newnorm > TOLERR; i++)
     {
         for (size_t jl = 0; jl < level - 1; jl++)
@@ -310,17 +312,17 @@ int main(int argc, char** argv)
 			fOut1 << std::endl;
 			fOutsolt1 << std::endl;
 		}
-//#pragma omp parallel for
-//		for (size_t y = ydim - 2; y >= 0; y--) 
-//		{
-//			for (size_t x = 0; x < xdim; ++x) 
-//			{
-//				fOut1 << x*hsize - 1.0 << "\t" << (ydim-1-y)*hsize << "\t" << (*xGrids[0])(x, y) << std::endl;
-//				fOutsolt1 << x*hsize - 1.0 << "\t" << y*hsize - 1.0 << "\t" << (*sGrid)(x, y) << std::endl;
-//			}
-//			fOut1 << std::endl;
-//			fOutsolt1 << std::endl;
-//		}
+#pragma omp parallel for
+		for (size_t y = ydim - 2; y >= 0; y--) 
+		{
+			for (size_t x = 0; x < xdim; ++x) 
+			{
+				fOut1 << x*hsize - 1.0 << "\t" << (ydim-1-y)*hsize << "\t" << (*xGrids[0])(x, y) << std::endl;
+				fOutsolt1 << x*hsize - 1.0 << "\t" << y*hsize - 1.0 << "\t" << (*sGrid)(x, y) << std::endl;
+			}
+			fOut1 << std::endl;
+			fOutsolt1 << std::endl;
+		}
 	
 		fOut1.close();
 		fOutsolt1.close();
