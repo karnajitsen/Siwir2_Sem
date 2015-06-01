@@ -312,9 +312,10 @@ int main(int argc, char** argv)
 			fOut1 << std::endl;
 			fOutsolt1 << std::endl;
 		}
-#pragma omp parallel for
+
 		for (size_t y = ydim - 2; y >= 0; y = y-1) 
 		{
+#pragma omp parallel for
 			for (size_t x = 0; x < xdim; ++x) 
 			{
 				fOut1 << x*hsize - 1.0 << "\t" << (ydim-1-y)*hsize << "\t" << (*xGrids[0])(x, y) << std::endl;
