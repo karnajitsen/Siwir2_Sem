@@ -113,8 +113,9 @@ inline void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 	//size_t i = 1;
 #pragma omp parallel //firstprivate(xlen,ylen,midX,midY,alpha,beta,center)
 	{
+		size_t i = 0;
 #pragma omp for
-		for (size_t i = 1; i < ylen; i++)
+		for ( i = 1; i < ylen - 1; i++)
 		{
 			for (size_t j = 1; j < xlen - 1; j++)
 			{
@@ -124,6 +125,13 @@ inline void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
 
 
 		}
+#pragma omp for
+		for (size_t j = i; j < xlen - 1; j++)
+		{
+			tmpgrd(j, i) = (*fgrd)(j, i) + alpha*((*xgrd)(j + 1, i) + (*xgrd)(j - 1, i)) + beta * (2.0 * (*xgrd)(j, i - 1)) - (*xgrd)(j, i) * center;
+		}
+
+
 	}
 
     size_t rxlen = (*rgrid).getXsize();

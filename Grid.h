@@ -50,7 +50,7 @@ public:
 					double k = -1.0 + j*hx;
 					data[j] = gxy(k, -1.0);
 					data[j*ld] = gxy(-1.0, k);
-					data[j + sizeY - 1] = gxy(k, -1.0);
+					data[j + sizeY - 1] = gxy(k + 1.0, -1.0);
 					data[j * ld + (sizeX - 1)] = gxy(1.0, k);				
 
 				}
