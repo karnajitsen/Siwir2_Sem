@@ -15,7 +15,7 @@ class Grid
 {
 
     //__declspec(align(128))
-    double * __restrict data = NULL;
+	double * __restrict data = NULL;
     size_t sizeX, sizeY, ld, totLength;
     double hx, hy;
 
@@ -45,17 +45,13 @@ public:
 	#pragma omp parallel
 			{
 	#pragma omp for
-				for (int j = 0.0; (size_t)j < sizeX; j++)
+				for (int j = 0.0; (size_t)j < sizeY; j++)
 				{
 					double k = -1.0 + j*hx;
 					data[j] = gxy(k, -1.0);
 					data[j*ld] = gxy(-1.0, k);
-					data[j + ld * (sizeY - 1)] = gxy(k, 1.0);
-					data[j * ld + (sizeX - 1)] = gxy(1.0, k);
-					if (k >= 0.0)
-					{
-						data[j + ld * (sizeY - 1) / 2] = gxy(k, 0.0);
-					}
+					data[j + sizeY - 1] = gxy(k, -1.0);
+					data[j * ld + (sizeX - 1)] = gxy(1.0, k);				
 
 				}
 			}
@@ -76,6 +72,7 @@ public:
 		double r = sqrt(sqrt(x*x + y*y));
 
 		double theta = atan2(y, x);
+		//std::cout << "Arctan = " << 360 - abs(180 * theta / 3.14159) << '\n';
 		return r*sin(M_PI - abs(theta) * 0.5);
     }
 
