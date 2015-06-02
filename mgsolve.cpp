@@ -11,9 +11,9 @@
 #define V1 2
 #define V2 1
 
-Grid ** xGrids = nullptr;
-Grid ** fGrids = nullptr;
-Grid *sGrid = nullptr;
+restrict Grid ** xGrids = nullptr;
+restrict Grid ** fGrids = nullptr;
+restrict Grid *sGrid = nullptr;
 //bool isNeumann = false;
 
 inline void init(double hsize, const size_t level)
@@ -38,14 +38,14 @@ inline void init(double hsize, const size_t level)
    
 }
 
-inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
+inline void smooth(restrict Grid* xgrd, const restrict Grid* fgrd, const size_t iter)
 {
 	size_t dimX = (*xgrd).getXsize();
 	size_t dimY = (*xgrd).getYsize();
 	double hx = (*xgrd).getHx();
 	double hy = (*xgrd).getHy();
 	//size_t midY = (dimY - 1) / 2;
-	//size_t midX = (dimX - 1) / 2;
+	size_t midX = (dimX - 1) / 2;
 	std::cout << "Smooth";
 	size_t j = 0;
 	for (size_t i = 0; i < iter; i++)
@@ -67,7 +67,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 
 			}
 #pragma omp for
-			for (size_t k = ((j+1) & 0x1) + 1; k < (dimX / 2) ; k += 2)
+			for (size_t k = ((j+1) & 0x1) + 1; k < midX ; k += 2)
 			{
 				(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + 2.0 * (*xgrd)(k, j - 1)) * 0.25;
 			}
@@ -87,7 +87,7 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 				
 			}
 #pragma omp for
-			for (size_t k = (j & 0x1) + 1; k < dimX / 2; k += 2)
+			for (size_t k = (j & 0x1) + 1; k < midX; k += 2)
 			{
 				(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + 2.0 * (*xgrd)(k, j - 1)) * 0.25;
 			}
@@ -97,73 +97,71 @@ inline void smooth(Grid* xgrd, const Grid* fgrd, const size_t iter)
 	
 }
 
-inline void restriction(const Grid * xgrd, const Grid * fgrd, Grid* rgrid)
+inline void restriction(const restrict Grid * xgrd, const restrict Grid * fgrd, restrict Grid* rgrid)
 {
-//    size_t xlen = (*xgrd).getXsize();
-//    size_t ylen = (*xgrd).getYsize();
-//    double hx = (*xgrd).getHx();
-//    double hy = (*xgrd).getHy();
-//    double	alpha = 1.0 / hx / hx;
-//    double	beta = 1.0 / hy / hy;
-//    double	center = (2.0 * alpha) + (2.0 * beta);
-//	
-//	std::cout << "***************:: restriction= ";
-//	Grid tmpgrd(xlen, ylen, hx, hy, false);
-//	//size_t i = 1;
-//#pragma omp parallel //firstprivate(xlen,ylen,midX,midY,alpha,beta,center)
-//	{
-//		size_t i = 0;
-//#pragma omp for
-//		for ( i = 1; i < ylen - 1; i++)
-//		{
-//			for (size_t j = 1; j < xlen - 1; j++)
-//			{
-//					tmpgrd(j, i) = (*fgrd)(j, i) + alpha*((*xgrd)(j + 1, i) + (*xgrd)(j - 1, i)) + beta * ((*xgrd)(j, i + 1)
-//					+ (*xgrd)(j, i - 1)) - (*xgrd)(j, i) * center;
-//			}
-//
-//
-//		}
-//#pragma omp for
-//		for (size_t j = i; j < xlen / 2; j++)
-//		{
-//			tmpgrd(j, i) = (*fgrd)(j, i) + alpha*((*xgrd)(j + 1, i) + (*xgrd)(j - 1, i)) + beta * (2.0 * (*xgrd)(j, i - 1)) - (*xgrd)(j, i) * center;
-//		}
-//
-//
-//	}
-//
-//    size_t rxlen = (*rgrid).getXsize();
-//    size_t rylen = (*rgrid).getYsize();
-//
-//#pragma omp parallel //firstprivate(rxlen,rylen,midX,midY)
-//	{
-//		size_t i = 0;
-//#pragma omp for
-//		for (i = 1; i < rylen-1; i++)
-//		{
-//			for (size_t j = 1; j < rxlen-1; j++)
-//			{
-//				//if ((i == midY && j < midX) || i != midY)
-//					(*rgrid)(j, i) = (tmpgrd(2 * j - 1, 2 * i - 1) + tmpgrd(2 * j - 1, 2 * i + 1) +
-//					tmpgrd(2 * j + 1, 2 * i - 1) + tmpgrd(2 * j + 1, 2 * i + 1)) * 0.0625 +
-//					0.125 *(tmpgrd(2 * j, 2 * i - 1) + tmpgrd(2 * j, 2 * i + 1) +
-//					tmpgrd(2 * j - 1, 2 * i) + tmpgrd(2 * j + 1, 2 * i)) + 0.25 * tmpgrd(2 * j, 2 * i);
-//			}
-//
-//		}
-//#pragma omp for
-//		for (size_t j = 1; j < rxlen - 1; j++)
-//		{
-//			(*rgrid)(j, i) = (tmpgrd(2 * j - 1, 2 * i - 1) +
-//				tmpgrd(2 * j + 1, 2 * i - 1)) * 0.125 +
-//				0.125 *(tmpgrd(2 * j, 2 * i - 1) * 2.0 + tmpgrd(2 * j - 1, 2 * i) + tmpgrd(2 * j + 1, 2 * i)) + 0.25 * tmpgrd(2 * j, 2 * i);
-//		}
-//
-//	}
+    size_t xlen = (*xgrd).getXsize();
+    size_t ylen = (*xgrd).getYsize();
+    double hx = (*xgrd).getHx();
+    double hy = (*xgrd).getHy();
+    double	alpha = 1.0 / hx / hx;
+    double	beta = 1.0 / hy / hy;
+    double	center = (2.0 * alpha) + (2.0 * beta);
+	
+	std::cout << "***************:: restriction= ";
+	Grid tmpgrd(xlen, ylen, hx, hy, false);
+	//size_t i = 1;
+#pragma omp parallel //firstprivate(xlen,ylen,midX,midY,alpha,beta,center)
+	{
+		 
+#pragma omp for
+		 for (size_t i = 1; i < ylen - 1; i++)
+		{
+			for (size_t j = 1; j < xlen - 1; j++)
+			{
+					tmpgrd(j, i) = (*fgrd)(j, i) + alpha*((*xgrd)(j + 1, i) + (*xgrd)(j - 1, i)) + beta * ((*xgrd)(j, i + 1)
+					+ (*xgrd)(j, i - 1)) - (*xgrd)(j, i) * center;
+			}
+
+
+		}
+#pragma omp for
+		for (size_t j = 1; j < xlen / 2; j++)
+		{
+			tmpgrd(j, i) = (*fgrd)(j, i) + alpha*((*xgrd)(j + 1, i) + (*xgrd)(j - 1, i)) + beta * (2.0 * (*xgrd)(j, i - 1)) - (*xgrd)(j, i) * center;
+		}
+	}
+
+    size_t rxlen = (*rgrid).getXsize();
+    size_t rylen = (*rgrid).getYsize();
+
+#pragma omp parallel //firstprivate(rxlen,rylen,midX,midY)
+	{
+		
+#pragma omp for
+		for (size_t i = 1; i < rylen - 1; i++)
+		{
+			for (size_t j = 1; j < rxlen-1; j++)
+			{
+				//if ((i == midY && j < midX) || i != midY)
+					(*rgrid)(j, i) = (tmpgrd(2 * j - 1, 2 * i - 1) + tmpgrd(2 * j - 1, 2 * i + 1) +
+					tmpgrd(2 * j + 1, 2 * i - 1) + tmpgrd(2 * j + 1, 2 * i + 1)) * 0.0625 +
+					0.125 *(tmpgrd(2 * j, 2 * i - 1) + tmpgrd(2 * j, 2 * i + 1) +
+					tmpgrd(2 * j - 1, 2 * i) + tmpgrd(2 * j + 1, 2 * i)) + 0.25 * tmpgrd(2 * j, 2 * i);
+			}
+
+		}
+#pragma omp for
+		for (size_t j = 1; j < rxlen - 1; j++)
+		{
+			(*rgrid)(j, i) = (tmpgrd(2 * j - 1, 2 * i - 1) +
+				tmpgrd(2 * j + 1, 2 * i - 1)) * 0.125 +
+				0.125 *(tmpgrd(2 * j, 2 * i - 1) * 2.0 + tmpgrd(2 * j - 1, 2 * i) + tmpgrd(2 * j + 1, 2 * i)) + 0.25 * tmpgrd(2 * j, 2 * i);
+		}
+
+	}
    }
 
-inline void interpolate(Grid * srcgrd, Grid * tgtgrd)
+inline void interpolate(restrict Grid * srcgrd, restrict Grid * tgtgrd)
 {
       size_t txlen = (*tgtgrd).getXsize()-1;
 	size_t tylen = (*tgtgrd).getYsize()-1;
@@ -189,7 +187,7 @@ inline void interpolate(Grid * srcgrd, Grid * tgtgrd)
 
 }
 
-inline double errorNorm(const Grid* xgrd, const Grid * sgrd)
+inline double errorNorm(restrict const Grid* xgrd, restrict const Grid * sgrd)
 {
 
     size_t dimX = (*xgrd).getXsize();
