@@ -307,7 +307,7 @@ int main(int argc, char** argv)
     std::ofstream	fOutsolt1(fnames1);
 	std::cout << "\n\nWriting solution to the file...\n\n";
 
-#pragma omp parallel for
+//#pragma omp parallel for
 		for (size_t y = 0; y < ydim; ++y) {
 			for (size_t x = 0; x < xdim; ++x) {
 
