@@ -18,7 +18,7 @@ Grid * __restrict sGrid = nullptr;
 
 inline void init(double hsize, const size_t level)
 {
-	std::cout << "Init";
+	//std::cout << "Init";
 	size_t je = level;
     size_t xdim = pow(2, je) + 1;
     size_t ydim = (xdim/2)+1;
@@ -46,7 +46,7 @@ inline void smooth(Grid* __restrict xgrd, const  Grid* __restrict fgrd, const si
 	double hy = (*xgrd).getHy();
 	//size_t midY = (dimY - 1) / 2;
 	size_t midX = (dimX - 1) / 2;
-	std::cout << "Smooth";
+	//std::cout << "Smooth";
 	//size_t j = 0;
 	for (size_t i = 0; i < iter; i++)
 	{
@@ -107,7 +107,7 @@ inline void restriction(const  Grid * __restrict xgrd, const Grid *  __restrict 
     double	beta = 1.0 / hy / hy;
     double	center = (2.0 * alpha) + (2.0 * beta);
 	
-	std::cout << "***************:: restriction= ";
+	//std::cout << "***************:: restriction= ";
 	Grid tmpgrd(xlen+1, ylen+1, hx, hy, false);
 	//size_t i = 1;
 #pragma omp parallel //firstprivate(xlen,ylen,midX,midY,alpha,beta,center)
@@ -166,7 +166,7 @@ inline void interpolate(Grid * __restrict srcgrd, Grid * __restrict tgtgrd)
 {
       size_t txlen = (*tgtgrd).getXsize()-1;
 	size_t tylen = (*tgtgrd).getYsize()-1;
-	std::cout << "Interpolate";
+	//std::cout << "Interpolate";
 #pragma omp parallel  //firstprivate(txlen,tylen) 
 	{
 #pragma omp for
@@ -226,7 +226,7 @@ void mgsolve(size_t level)
 	ydim = (xdim / 2) + 1;
 	sGrid = new Grid(xdim, ydim, hsize, hsize, true);
 	//size_t k = 0;
-	std::cout << "solution grid";
+	//std::cout << "solution grid";
 #pragma omp parallel //firstprivate(gdim,hsize)
 	{
 #pragma omp for
@@ -240,7 +240,7 @@ void mgsolve(size_t level)
 		}
 	}
 	
-	std::cout << "solution grid2";
+	//std::cout << "solution grid2";
 	for ( i = 1; newnorm > TOLERR; i++)
     {
         for (size_t jl = 0; jl < level - 1; jl++)
@@ -258,7 +258,7 @@ void mgsolve(size_t level)
         }
 
 		newnorm = errorNorm(xGrids[0], sGrid);
-		//std::cout << "Dirichlet:: Error L2 Norm for h as 1/" << gdim - 1 << " = " << newnorm << "\n\n";	
+		std::cout << "Dirichlet:: Error L2 Norm for h as 1/" << gdim - 1 << " = " << newnorm << "\n\n";	
 
     }
    // vcycle = i;   
