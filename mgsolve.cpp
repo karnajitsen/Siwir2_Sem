@@ -258,7 +258,7 @@ void mgsolve(size_t level)
         }
 
 		newnorm = errorNorm(xGrids[0], sGrid);
-		std::cout << "Dirichlet:: Error L2 Norm for h as 1/" << gdim - 1 << " = " << newnorm << "\n\n";	
+		std::cout << "Dirichlet:: Error L2 Norm for h as 1/ = " << newnorm << "\n\n";	
 
     }
    // vcycle = i;   
