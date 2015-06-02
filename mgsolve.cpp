@@ -347,7 +347,7 @@ int main(int argc, char** argv)
 		 xdim = (*xGrids[0]).getXsize();
 		 ydim = (*xGrids[0]).getYsize();
 		std::cout << "\n\nWriting solution to the file..,,,,.\n\n" << ydim ;
-		for (size_t y = ydim - 2; y >= 0; y = y-1) 
+		for (size_t y = ydim - 2; y > 0; y = y-1) 
 		{
 //#pragma omp parallel for
 			for (size_t x = 0; x < xdim; ++x) 
