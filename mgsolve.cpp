@@ -7,8 +7,8 @@
 #define XDOMHIGH 1.0
 #define YDOMLOW -1.0
 #define YDOMHIGH 1.0
-//#define TOLERR 0.0000918
-#define TOLERR 0.002
+#define TOLERR 0.0000918
+//#define TOLERR 0.002
 #define V1 2
 #define V2 1
 
