@@ -40,54 +40,54 @@ inline void init(double hsize, const size_t level)
 
 inline void smooth(Grid* __restrict xgrd, const  Grid* __restrict fgrd, const size_t iter)
 {
-	size_t dimX = (*xgrd).getXsize();
-	size_t dimY = (*xgrd).getYsize();
+	size_t dimX = (*xgrd).getXsize()-1;
+	size_t dimY = (*xgrd).getYsize()-1;
 	double hx = (*xgrd).getHx();
 	double hy = (*xgrd).getHy();
 	//size_t midY = (dimY - 1) / 2;
 	size_t midX = (dimX - 1) / 2;
 	std::cout << "Smooth";
-	size_t j = 0;
+	//size_t j = 0;
 	for (size_t i = 0; i < iter; i++)
 	{
 		
 #pragma omp parallel //firstprivate(dimY,dimX,midX,midY,hx,hy)
 		{
 			
-//#pragma omp for
-//			for (j = 1; j < dimY - 1; j++)
-//			{
-//				size_t l = ((j+1) & 0x1) + 1;
-//				for (size_t k = l; k < dimX - 1; k += 2)
-//				{
-//
-//					(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + (*xgrd)(k, j + 1)
-//						+ (*xgrd)(k, j - 1)) * 0.25;
-//				}
-//
-//			}
-//#pragma omp for
-//			for (size_t k = ((j+1) & 0x1) + 1; k < midX ; k += 2)
-//			{
-//				(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + 2.0 * (*xgrd)(k, j - 1)) * 0.25;
-//			}
+#pragma omp for
+			for (size_t j = 1; j < dimY; j++)
+			{
+				size_t l = ((j+1) & 0x1) + 1;
+				for (size_t k = l; k < dimX ; k += 2)
+				{
+
+					/*(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + (*xgrd)(k, j + 1)
+						+ (*xgrd)(k, j - 1)) * 0.25;*/
+				}
+
+			}
+#pragma omp for
+			for (size_t k = 1; k < midX ; k += 2)
+			{
+				(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + 2.0 * (*xgrd)(k, j - 1)) * 0.25;
+			}
 		}
 #pragma omp parallel //firstprivate(dimY,dimX,midX,midY,hx,hy)
 		{
 #pragma omp for
-			for (j = 1; j < dimY-1; j++)
+			for (size_t j = 1; j < dimY-1; j++)
 			{
 				size_t l = (j & 0x1) + 1;
-					for (size_t k = l; k < dimX - 1; k += 2)
+					for (size_t k = l; k < dimX; k += 2)
 					{
 
-						(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + (*xgrd)(k, j + 1)
-							+ (*xgrd)(k, j - 1)) * 0.25;
+						/*(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + (*xgrd)(k, j + 1)
+							+ (*xgrd)(k, j - 1)) * 0.25;*/
 					}			
 				
 			}
 #pragma omp for
-			for (size_t k = (j & 0x1) + 1; k < midX; k += 2)
+			for (size_t k = 2; k < midX; k += 2)
 			{
 				(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + 2.0 * (*xgrd)(k, j - 1)) * 0.25;
 			}
