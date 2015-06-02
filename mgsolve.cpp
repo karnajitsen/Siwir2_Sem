@@ -74,23 +74,23 @@ inline void smooth(Grid* __restrict xgrd, const  Grid* __restrict fgrd, const si
 		}
 #pragma omp parallel //firstprivate(dimY,dimX,midX,midY,hx,hy)
 		{
-//#pragma omp for
-//			for (j = 1; j < dimY-1; j++)
-//			{
-//				size_t l = (j & 0x1) + 1;
-//					for (size_t k = l; k < dimX - 1; k += 2)
-//					{
-//
-//						(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + (*xgrd)(k, j + 1)
-//							+ (*xgrd)(k, j - 1)) * 0.25;
-//					}			
-//				
-//			}
-//#pragma omp for
-//			for (size_t k = (j & 0x1) + 1; k < midX; k += 2)
-//			{
-//				(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + 2.0 * (*xgrd)(k, j - 1)) * 0.25;
-//			}
+#pragma omp for
+			for (j = 1; j < dimY-1; j++)
+			{
+				size_t l = (j & 0x1) + 1;
+					for (size_t k = l; k < dimX - 1; k += 2)
+					{
+
+						(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + (*xgrd)(k, j + 1)
+							+ (*xgrd)(k, j - 1)) * 0.25;
+					}			
+				
+			}
+#pragma omp for
+			for (size_t k = (j & 0x1) + 1; k < midX; k += 2)
+			{
+				(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + 2.0 * (*xgrd)(k, j - 1)) * 0.25;
+			}
 
 		}
 	}
