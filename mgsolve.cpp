@@ -61,7 +61,6 @@ inline void smooth(Grid* __restrict xgrd, const  Grid* __restrict fgrd, const si
 					size_t l = ((j + 1) & 0x1) + 1;
 					for (size_t k = l; k < dimX; k += 2)
 					{
-
 						(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + (*xgrd)(k, j + 1)
 							+ (*xgrd)(k, j - 1)) * 0.25;
 					}
@@ -83,7 +82,7 @@ inline void smooth(Grid* __restrict xgrd, const  Grid* __restrict fgrd, const si
 #pragma omp for
 			for (size_t j = 1; j < dimY; j++)
 			{
-				size_t l = ((j + 1) & 0x1) + 1;
+				size_t l = (j & 0x1) + 1;
 				for (size_t k = l; k < dimX; k += 2)
 				{
 
