@@ -325,7 +325,7 @@ int main(int argc, char** argv)
 			for (size_t x = 0; x < xdim; ++x) 
 			{
 				fOut1 << x*hsize - 1.0 << "\t" << (ydim-1-y)*hsize << "\t" << (*xGrids[0])(x, y) << std::endl;
-				fOutsolt1 << x*hsize - 1.0 << "\t" << y*hsize - 1.0 << "\t" << (*sGrid)(x, y) << std::endl;
+				fOutsolt1 << x*hsize - 1.0 << "\t" << (ydim - 1 - y)*hsize << "\t" << (*sGrid)(x, y) << std::endl;
 			}
 			fOut1 << std::endl;
 			fOutsolt1 << std::endl;
