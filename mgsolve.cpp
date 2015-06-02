@@ -58,6 +58,8 @@ inline void smooth(Grid* __restrict xgrd, const  Grid* __restrict fgrd, const si
 #pragma omp for
 			for (size_t j = 1; j < dimY; j++)
 			{
+				int tid = omp_get_num_threads(); 
+				cout << "no of thread" << tid;
 					size_t l = ((j + 1) & 0x1) + 1;
 					for (size_t k = l; k < dimX; k += 2)
 					{
