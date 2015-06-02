@@ -99,8 +99,8 @@ inline void smooth(__restrict Grid* xgrd, const __restrict Grid* fgrd, const siz
 
 inline void restriction(const __restrict Grid * xgrd, const __restrict Grid * fgrd, __restrict Grid* rgrid)
 {
-    size_t xlen = (*xgrd).getXsize();
-    size_t ylen = (*xgrd).getYsize();
+    size_t xlen = (*xgrd).getXsize()-1;
+    size_t ylen = (*xgrd).getYsize()-1;
     double hx = (*xgrd).getHx();
     double hy = (*xgrd).getHy();
     double	alpha = 1.0 / hx / hx;
@@ -108,15 +108,15 @@ inline void restriction(const __restrict Grid * xgrd, const __restrict Grid * fg
     double	center = (2.0 * alpha) + (2.0 * beta);
 	
 	std::cout << "***************:: restriction= ";
-	Grid tmpgrd(xlen, ylen, hx, hy, false);
+	Grid tmpgrd(xlen+1, ylen+1, hx, hy, false);
 	//size_t i = 1;
 #pragma omp parallel //firstprivate(xlen,ylen,midX,midY,alpha,beta,center)
 	{
-		 
+		//size_t i = 0;
 #pragma omp for
-		 for (size_t i = 1; i < ylen - 1; i++)
+		for (size_t i = 1; i < ylen; i++)
 		{
-			for (size_t j = 1; j < xlen - 1; j++)
+			for (size_t j = 1; j < xlen; j++)
 			{
 					tmpgrd(j, i) = (*fgrd)(j, i) + alpha*((*xgrd)(j + 1, i) + (*xgrd)(j - 1, i)) + beta * ((*xgrd)(j, i + 1)
 					+ (*xgrd)(j, i - 1)) - (*xgrd)(j, i) * center;
@@ -124,23 +124,24 @@ inline void restriction(const __restrict Grid * xgrd, const __restrict Grid * fg
 
 
 		}
+
 #pragma omp for
 		for (size_t j = 1; j < xlen / 2; j++)
 		{
-			tmpgrd(j, i) = (*fgrd)(j, i) + alpha*((*xgrd)(j + 1, i) + (*xgrd)(j - 1, i)) + beta * (2.0 * (*xgrd)(j, i - 1)) - (*xgrd)(j, i) * center;
+			tmpgrd(j, ylen) = (*fgrd)(j, ylen) + alpha*((*xgrd)(j + 1, ylen) + (*xgrd)(j - 1, ylen)) + beta * (2.0 * (*xgrd)(j, ylen - 1)) - (*xgrd)(j, ylen) * center;
 		}
 	}
 
-    size_t rxlen = (*rgrid).getXsize();
-    size_t rylen = (*rgrid).getYsize();
+    size_t rxlen = (*rgrid).getXsize() - 1;
+    size_t rylen = (*rgrid).getYsize() - 1;
 
 #pragma omp parallel //firstprivate(rxlen,rylen,midX,midY)
 	{
-		
+		//size_t i = 0;
 #pragma omp for
-		for (size_t i = 1; i < rylen - 1; i++)
+		for (size_t i = 1; i < rylen; i++)
 		{
-			for (size_t j = 1; j < rxlen-1; j++)
+			for (size_t j = 1; j < rxlen; j++)
 			{
 				//if ((i == midY && j < midX) || i != midY)
 					(*rgrid)(j, i) = (tmpgrd(2 * j - 1, 2 * i - 1) + tmpgrd(2 * j - 1, 2 * i + 1) +
@@ -153,9 +154,9 @@ inline void restriction(const __restrict Grid * xgrd, const __restrict Grid * fg
 #pragma omp for
 		for (size_t j = 1; j < rxlen - 1; j++)
 		{
-			(*rgrid)(j, i) = (tmpgrd(2 * j - 1, 2 * i - 1) +
-				tmpgrd(2 * j + 1, 2 * i - 1)) * 0.125 +
-				0.125 *(tmpgrd(2 * j, 2 * i - 1) * 2.0 + tmpgrd(2 * j - 1, 2 * i) + tmpgrd(2 * j + 1, 2 * i)) + 0.25 * tmpgrd(2 * j, 2 * i);
+			(*rgrid)(j, rylen) = (tmpgrd(2 * j - 1, 2 * rylen - 1) +
+				tmpgrd(2 * j + 1, 2 * rylen - 1)) * 0.125 +
+				0.125 *(tmpgrd(2 * j, 2 * rylen - 1) * 2.0 + tmpgrd(2 * j - 1, 2 * rylen) + tmpgrd(2 * j + 1, 2 * rylen)) + 0.25 * tmpgrd(2 * j, 2 * rylen);
 		}
 
 	}
