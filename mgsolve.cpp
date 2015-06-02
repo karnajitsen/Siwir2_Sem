@@ -56,10 +56,8 @@ inline void smooth(Grid* __restrict xgrd, const  Grid* __restrict fgrd, const si
 		{
 			
 #pragma omp for
-			for (size_t j = 1; j <= dimY; j++)
+			for (size_t j = 1; j < dimY; j++)
 			{
-				if (j != dimY)
-				{
 					size_t l = ((j + 1) & 0x1) + 1;
 					for (size_t k = l; k < dimX; k += 2)
 					{
@@ -67,48 +65,40 @@ inline void smooth(Grid* __restrict xgrd, const  Grid* __restrict fgrd, const si
 						(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + (*xgrd)(k, j + 1)
 							+ (*xgrd)(k, j - 1)) * 0.25;
 					}
-				}
-				else
-				{
-					for (size_t k = 1; k < midX; k += 2)
-						{
-							(*xgrd)(k, dimY) = (hx*hy*(*fgrd)(k, dimY) + (*xgrd)(k + 1, dimY) + (*xgrd)(k - 1, dimY) + 2.0 * (*xgrd)(k, dimY - 1)) * 0.25;
-						}
-				}
-
+				
+					
 			}
+#pragma omp for
+			for (size_t k = 1; k < midX; k += 2)
+			{
+				(*xgrd)(k, dimY) = (hx*hy*(*fgrd)(k, dimY) + (*xgrd)(k + 1, dimY) + (*xgrd)(k - 1, dimY) + 2.0 * (*xgrd)(k, dimY - 1)) * 0.25;
+			}
+
+		}
 //#pragma omp for
 //			
-		}
+		
 #pragma omp parallel //firstprivate(dimY,dimX,midX,midY,hx,hy)
 		{
 #pragma omp for
-			for (size_t j = 1; j <= dimY; j++)
+			for (size_t j = 1; j < dimY; j++)
 			{
-				if (j != dimY)
+				size_t l = ((j + 1) & 0x1) + 1;
+				for (size_t k = l; k < dimX; k += 2)
 				{
-					size_t l = (j  & 0x1) + 1;
-					for (size_t k = l; k < dimX; k += 2)
-					{
 
-						(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + (*xgrd)(k, j + 1)
-							+ (*xgrd)(k, j - 1)) * 0.25;
-					}
+					(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + (*xgrd)(k, j + 1)
+						+ (*xgrd)(k, j - 1)) * 0.25;
 				}
-				else
-				{
-					for (size_t k = 2; k < midX; k += 2)
-					{
-						(*xgrd)(k, dimY) = (hx*hy*(*fgrd)(k, dimY) + (*xgrd)(k + 1, dimY) + (*xgrd)(k - 1, dimY) + 2.0 * (*xgrd)(k, dimY - 1)) * 0.25;
-					}
-				}
+
+
 			}
-//#pragma omp for
-//			for (size_t k = 2; k < midX; k += 2)
-//			{
-//				(*xgrd)(k, dimY) = (hx*hy*(*fgrd)(k, dimY) + (*xgrd)(k + 1, dimY) + (*xgrd)(k - 1, dimY) + 2.0 * (*xgrd)(k, dimY - 1)) * 0.25;
-//			}
-
+#pragma omp for
+			for (size_t k = 2; k < midX; k += 2)
+			{
+				(*xgrd)(k, dimY) = (hx*hy*(*fgrd)(k, dimY) + (*xgrd)(k + 1, dimY) + (*xgrd)(k - 1, dimY) + 2.0 * (*xgrd)(k, dimY - 1)) * 0.25;
+			}
+		
 		}
 	}
 	
@@ -131,27 +121,23 @@ inline void restriction(const  Grid * __restrict xgrd, const Grid *  __restrict 
 	{
 		//size_t i = 0;
 #pragma omp for
-		for (size_t i = 1; i <= ylen; i++)
+		for (size_t i = 1; i < ylen; i++)
 		{
-			if (i != ylen)
-			{
+			
 				for (size_t j = 1; j < xlen; j++)
 				{
 					tmpgrd(j, i) = (*fgrd)(j, i) + alpha*((*xgrd)(j + 1, i) + (*xgrd)(j - 1, i)) + beta * ((*xgrd)(j, i + 1)
 						+ (*xgrd)(j, i - 1)) - (*xgrd)(j, i) * center;
 				}
-			}
-			else
-			{
-				for (size_t j = 1; j < xlen / 2; j++)
+		}
+			
+#pragma omp for		
+		for (size_t j = 1; j < xlen / 2; j++)
 				{
 					tmpgrd(j, ylen) = (*fgrd)(j, ylen) + alpha*((*xgrd)(j + 1, ylen) + (*xgrd)(j - 1, ylen)) + beta * (2.0 * (*xgrd)(j, ylen - 1)) - (*xgrd)(j, ylen) * center;
 				}
-			}
-
-		}
-
-}
+		
+				}
 
     size_t rxlen = (*rgrid).getXsize() - 1;
     size_t rylen = (*rgrid).getYsize() - 1;
@@ -160,10 +146,8 @@ inline void restriction(const  Grid * __restrict xgrd, const Grid *  __restrict 
 	{
 		//size_t i = 0;
 #pragma omp for
-		for (size_t i = 1; i <= rylen; i++)
+		for (size_t i = 1; i < rylen; i++)
 		{
-			if (i != rylen)
-			{
 				for (size_t j = 1; j < rxlen; j++)
 				{
 					//if ((i == midY && j < midX) || i != midY)
@@ -173,19 +157,16 @@ inline void restriction(const  Grid * __restrict xgrd, const Grid *  __restrict 
 						tmpgrd(2 * j - 1, 2 * i) + tmpgrd(2 * j + 1, 2 * i)) + 0.25 * tmpgrd(2 * j, 2 * i);
 				}
 			}
-			else
-			{
+#pragma omp for
 				for (size_t j = 1; j < rxlen /2; j++)
 				{
 					(*rgrid)(j, rylen) = (tmpgrd(2 * j - 1, 2 * rylen - 1) +
 						tmpgrd(2 * j + 1, 2 * rylen - 1)) * 0.125 +
 						0.125 *(tmpgrd(2 * j, 2 * rylen - 1) * 2.0 + tmpgrd(2 * j - 1, 2 * rylen) + tmpgrd(2 * j + 1, 2 * rylen)) + 0.25 * tmpgrd(2 * j, 2 * rylen);
 				}
-			}
+			
 
 		}
-
-	}
    }
 
 inline void interpolate(Grid * __restrict srcgrd, Grid * __restrict tgtgrd)
@@ -224,28 +205,28 @@ inline double errorNorm(const Grid* __restrict  xgrd, const Grid * __restrict sg
 #pragma omp parallel reduction(+: sum) firstprivate(r)
 	{
 #pragma omp for
-		for (size_t j = 0; j < dimY; j++)
+		for (size_t j = 0; j < dimY - 1; j++)
 		{
-			if (j != dimY - 1)
+			for (size_t k = 0; k < dimX; k++)
 			{
-				for (size_t k = 0; k < dimX; k++)
-				{
-					r = (*sgrd)(k, j) - (*xgrd)(k, j);
+				r = (*sgrd)(k, j) - (*xgrd)(k, j);
 
-					sum += 2.0*r*r;
-				}
+				sum += 2.0*r*r;
 			}
-			else
-			{
-				for (size_t k = 0; k < dimX; k++)
-				{
-					r = (*sgrd)(k, j) - (*xgrd)(k, j);
-
-					sum += r*r;
-				}
-			}
-
 		}
+	}
+#pragma omp parallel reduction(+: sum) firstprivate(r)
+	{
+#pragma omp for
+		for (size_t k = 0; k < dimX; k++)
+		{
+			r = (*sgrd)(k, dimY - 1) - (*xgrd)(k, dimY - 1);
+
+			sum += r*r;
+		}
+	}
+	
+			
 	}
 
     return sqrt(sum / dimX / (2*dimY- 1));
