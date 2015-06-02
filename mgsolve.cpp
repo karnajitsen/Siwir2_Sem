@@ -241,7 +241,7 @@ void mgsolve(size_t level)
 	}
 	
 	//std::cout << "solution grid2";
-	for ( i = 1; newnorm > TOLERR; i++)
+	for ( i = 1; newnorm > TOLERR*4; i++)
     {
         for (size_t jl = 0; jl < level - 1; jl++)
         {
