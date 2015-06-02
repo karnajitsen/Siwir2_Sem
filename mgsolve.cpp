@@ -71,9 +71,9 @@ inline void smooth(Grid* __restrict xgrd, const  Grid* __restrict fgrd, const si
 				else
 				{
 					for (size_t k = 1; k < midX; k += 2)
-									{
-										(*xgrd)(k, dimY) = (hx*hy*(*fgrd)(k, dimY) + (*xgrd)(k + 1, dimY) + (*xgrd)(k - 1, dimY) + 2.0 * (*xgrd)(k, dimY - 1)) * 0.25;
-									}
+						{
+							(*xgrd)(k, dimY) = (hx*hy*(*fgrd)(k, dimY) + (*xgrd)(k + 1, dimY) + (*xgrd)(k - 1, dimY) + 2.0 * (*xgrd)(k, dimY - 1)) * 0.25;
+						}
 				}
 
 			}
@@ -97,7 +97,7 @@ inline void smooth(Grid* __restrict xgrd, const  Grid* __restrict fgrd, const si
 				}
 				else
 				{
-					for (size_t k = 1; k < midX; k += 2)
+					for (size_t k = 2; k < midX; k += 2)
 					{
 						(*xgrd)(k, dimY) = (hx*hy*(*fgrd)(k, dimY) + (*xgrd)(k + 1, dimY) + (*xgrd)(k - 1, dimY) + 2.0 * (*xgrd)(k, dimY - 1)) * 0.25;
 					}
