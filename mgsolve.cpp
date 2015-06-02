@@ -11,9 +11,9 @@
 #define V1 2
 #define V2 1
 
-__restrict Grid ** xGrids = nullptr;
-__restrict Grid ** fGrids = nullptr;
-__restrict Grid *sGrid = nullptr;
+Grid ** __restrict xGrids = nullptr;
+Grid ** __restrict fGrids = nullptr;
+Grid * __restrict sGrid = nullptr;
 //bool isNeumann = false;
 
 inline void init(double hsize, const size_t level)
@@ -38,7 +38,7 @@ inline void init(double hsize, const size_t level)
    
 }
 
-inline void smooth(__restrict Grid* xgrd, const __restrict Grid* fgrd, const size_t iter)
+inline void smooth(Grid* __restrict xgrd, const  Grid* __restrict fgrd, const size_t iter)
 {
 	size_t dimX = (*xgrd).getXsize();
 	size_t dimY = (*xgrd).getYsize();
@@ -97,7 +97,7 @@ inline void smooth(__restrict Grid* xgrd, const __restrict Grid* fgrd, const siz
 	
 }
 
-inline void restriction(const __restrict Grid * xgrd, const __restrict Grid * fgrd, __restrict Grid* rgrid)
+inline void restriction(const  Grid * __restrict xgrd, const Grid *  __restrict fgrd, Grid* __restrict rgrid)
 {
     size_t xlen = (*xgrd).getXsize()-1;
     size_t ylen = (*xgrd).getYsize()-1;
@@ -162,7 +162,7 @@ inline void restriction(const __restrict Grid * xgrd, const __restrict Grid * fg
 	}
    }
 
-inline void interpolate(__restrict Grid * srcgrd, __restrict Grid * tgtgrd)
+inline void interpolate(Grid * __restrict srcgrd, Grid * __restrict tgtgrd)
 {
       size_t txlen = (*tgtgrd).getXsize()-1;
 	size_t tylen = (*tgtgrd).getYsize()-1;
@@ -188,7 +188,7 @@ inline void interpolate(__restrict Grid * srcgrd, __restrict Grid * tgtgrd)
 
 }
 
-inline double errorNorm(__restrict const Grid* xgrd, __restrict const Grid * sgrd)
+inline double errorNorm(const Grid* __restrict  xgrd, const Grid * __restrict sgrd)
 {
 
     size_t dimX = (*xgrd).getXsize();
