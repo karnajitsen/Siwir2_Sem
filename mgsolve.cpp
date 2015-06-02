@@ -85,17 +85,23 @@ inline void smooth(Grid* __restrict xgrd, const  Grid* __restrict fgrd, const si
 #pragma omp for
 			for (size_t j = 1; j <= dimY; j++)
 			{
-				size_t l = (j & 0x1) + 1;
+				if (j != dimY)
+				{
+					size_t l = (j  & 0x1) + 1;
 					for (size_t k = l; k < dimX; k += 2)
 					{
 
-						if (j != dimY)
-							(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + (*xgrd)(k, j + 1)
+						(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + (*xgrd)(k, j + 1)
 							+ (*xgrd)(k, j - 1)) * 0.25;
-						else
-							(*xgrd)(k, dimY) = (hx*hy*(*fgrd)(k, dimY) + (*xgrd)(k + 1, dimY) + (*xgrd)(k - 1, dimY) + 2.0 * (*xgrd)(k, dimY - 1)) * 0.25;
-					}			
-				
+					}
+				}
+				else
+				{
+					for (size_t k = 1; k < midX; k += 2)
+					{
+						(*xgrd)(k, dimY) = (hx*hy*(*fgrd)(k, dimY) + (*xgrd)(k + 1, dimY) + (*xgrd)(k - 1, dimY) + 2.0 * (*xgrd)(k, dimY - 1)) * 0.25;
+					}
+				}
 			}
 //#pragma omp for
 //			for (size_t k = 2; k < midX; k += 2)
@@ -169,7 +175,7 @@ inline void restriction(const  Grid * __restrict xgrd, const Grid *  __restrict 
 			}
 			else
 			{
-				for (size_t j = 1; j < rxlen - 1; j++)
+				for (size_t j = 1; j < rxlen /2; j++)
 				{
 					(*rgrid)(j, rylen) = (tmpgrd(2 * j - 1, 2 * rylen - 1) +
 						tmpgrd(2 * j + 1, 2 * rylen - 1)) * 0.125 +
