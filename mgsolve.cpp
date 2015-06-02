@@ -221,19 +221,28 @@ inline double errorNorm(const Grid* __restrict  xgrd, const Grid * __restrict sg
     size_t dimY = (*xgrd).getYsize();
 	double r = 0.0, sum = 0.0;
 	//size_t j;
-#pragma omp parallel reduction(+: sum) firstprivate(dimY, dimX,r)
+#pragma omp parallel reduction(+: sum) firstprivate(r)
 	{
 #pragma omp for
 		for (size_t j = 0; j < dimY; j++)
 		{
-			for (size_t k = 0; k < dimX; k++)
+			if (j != dimY - 1)
 			{
-				r = (*sgrd)(k, j) - (*xgrd)(k, j);
-				 
-				if (j!= dimY-1)
+				for (size_t k = 0; k < dimX; k++)
+				{
+					r = (*sgrd)(k, j) - (*xgrd)(k, j);
+
 					sum += 2.0*r*r;
-				else
+				}
+			}
+			else
+			{
+				for (size_t k = 0; k < dimX; k++)
+				{
+					r = (*sgrd)(k, j) - (*xgrd)(k, j);
+
 					sum += r*r;
+				}
 			}
 
 		}
