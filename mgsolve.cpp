@@ -67,6 +67,7 @@ inline void smooth(Grid* __restrict xgrd, const  Grid* __restrict fgrd, const si
 						(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + (*xgrd)(k, j + 1)
 							+ (*xgrd)(k, j - 1)) * 0.25;
 					}
+				}
 				else
 				{
 					for (size_t k = 1; k < midX; k += 2)
