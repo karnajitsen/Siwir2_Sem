@@ -225,9 +225,6 @@ inline double errorNorm(const Grid* __restrict  xgrd, const Grid * __restrict sg
 			sum += r*r;
 		}
 	}
-	
-			
-	}
 
     return sqrt(sum / dimX / (2*dimY- 1));
 }
