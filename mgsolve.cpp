@@ -318,7 +318,7 @@ int main(int argc, char** argv)
 			fOutsolt1 << std::endl;
 		}
 
-		std::cout << "\n\nWriting solution to the file...\n\n";
+		std::cout << "\n\nWriting solution to the file...\n\n" << ydim ;
 		for (size_t y = ydim - 2; y >= 0; y = y-1) 
 		{
 //#pragma omp parallel for
