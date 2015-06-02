@@ -205,7 +205,7 @@ inline double errorNorm(const Grid* __restrict  xgrd, const Grid * __restrict sg
 				r = (*sgrd)(k, j) - (*xgrd)(k, j);
 				 
 				if (j!= dimY-1)
-					sum += 4.0*r*r;
+					sum += 2.0*r*r;
 				else
 					sum += r*r;
 			}
