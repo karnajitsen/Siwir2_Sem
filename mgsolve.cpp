@@ -91,8 +91,8 @@ inline void smooth(Grid* __restrict xgrd, const  Grid* __restrict fgrd, const si
 //			{
 //				(*xgrd)(k, j) = (hx*hy*(*fgrd)(k, j) + (*xgrd)(k + 1, j) + (*xgrd)(k - 1, j) + 2.0 * (*xgrd)(k, j - 1)) * 0.25;
 //			}
-//
-//		}
+
+		}
 	}
 	
 }
