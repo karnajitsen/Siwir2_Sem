@@ -213,7 +213,7 @@ inline double errorNorm(const Grid* __restrict  xgrd, const Grid * __restrict sg
 		}
 	}
 
-    return sqrt(sum / dimX / dimY);
+    return sqrt(sum / dimX / (2*dimY- 1));
 }
 
 void mgsolve(size_t level)
