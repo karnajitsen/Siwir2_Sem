@@ -281,7 +281,7 @@ void mgsolve(size_t level)
         {
             smooth(xGrids[jl], fGrids[jl], V1);
 			restriction(xGrids[jl], fGrids[jl], fGrids[jl + 1]);
-			std::cout << jl << '\n';
+			//std::cout << jl << '\n';
 
         }
 
@@ -291,7 +291,7 @@ void mgsolve(size_t level)
             interpolate(xGrids[j], xGrids[j - 1]);
             (*xGrids[j]).reset();
             (*fGrids[j]).reset();
-			std::cout << j << '\n';
+			//std::cout << j << '\n';
         }
 
 		newnorm = errorNorm(xGrids[0], sGrid);
