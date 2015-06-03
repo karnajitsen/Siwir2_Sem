@@ -264,10 +264,10 @@ void mgsolve(size_t level)
 #pragma omp parallel //firstprivate(gdim,hsize)
 	{
 #pragma omp for
-		for (size_t k = 0; k < ydim; k++)
+		for (int k = 0; k < ydim; k++)
 		{
 			//#pragma omp parallel for
-			for (size_t j = 0; j < xdim; j++)
+			for (int j = 0; j < xdim; j++)
 			{
 				(*sGrid)(j, k) = (*sGrid).gxy(-1.0 + j*hsize, -1.0 + k*hsize);
 			}
@@ -295,7 +295,7 @@ void mgsolve(size_t level)
         }
 
 		newnorm = errorNorm(xGrids[0], sGrid);
-		//std::cout << "Dirichlet:: Error L2 Norm for h as 1/ = " << newnorm << "\n\n";	
+		std::cout << "Dirichlet:: Error L2 Norm for h as 1/ = " << newnorm << "\n\n";	
 
     }
    // vcycle = i;   
