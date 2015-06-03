@@ -67,7 +67,7 @@ public:
 
     inline double gxy(const double x, const double y)
     {
-		if (x == 0.0 && y == 0.0)
+		if (y == 0.0)
 			return 0.0;
 		double r = sqrt(sqrt(x*x + y*y));
 
