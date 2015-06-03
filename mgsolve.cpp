@@ -58,8 +58,8 @@ inline void smooth(Grid* __restrict xgrd, const  Grid* __restrict fgrd, const si
 #pragma omp for
 			for (size_t j = 1; j < dimY; j++)
 			{
-				int tid = omp_get_num_threads(); 
-				cout << "no of thread" << tid;
+				//int tid = omp_get_num_threads(); 
+				//cout << "no of thread" << tid;
 					size_t l = ((j + 1) & 0x1) + 1;
 					for (size_t k = l; k < dimX; k += 2)
 					{
@@ -260,7 +260,9 @@ void mgsolve(size_t level)
         for (size_t jl = 0; jl < level - 1; jl++)
         {
             smooth(xGrids[jl], fGrids[jl], V1);
-            restriction(xGrids[jl], fGrids[jl], fGrids[jl + 1]);
+			restriction(xGrids[jl], fGrids[jl], fGrids[jl + 1]);
+			std::cout << i << '\n';
+
         }
 
         for (size_t j = level - 1; j > 0; j--)
@@ -269,6 +271,7 @@ void mgsolve(size_t level)
             interpolate(xGrids[j], xGrids[j - 1]);
             (*xGrids[j]).reset();
             (*fGrids[j]).reset();
+			std::cout << j << '\n';
         }
 
 		newnorm = errorNorm(xGrids[0], sGrid);
@@ -335,7 +338,7 @@ int main(int argc, char** argv)
 		 xdim = (*xGrids[0]).getXsize();
 		 ydim = (*xGrids[0]).getYsize();
 		std::cout << "\n\nWriting solution to the file..,,,,.\n\n" << ydim ;
-		for (size_t y = ydim - 2; y > 0; y = y-1) 
+		for (int y = ydim - 2; y >= 0; y = y-1) 
 		{
 //#pragma omp parallel for
 			for (size_t x = 0; x < xdim; ++x) 
