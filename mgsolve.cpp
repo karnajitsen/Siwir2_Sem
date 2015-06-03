@@ -37,15 +37,15 @@ inline void init(double hsize, const size_t level)
         flag = false;
     }
    
-	cout << "====After initialization=== \n\n";
-	for (size_t j = 0; j < (*xGrids[0]).getYsize(); j++)
-	{
-	for (size_t k = 0; k < (*xGrids[0]).getXsize(); k++)
-	{
-	cout << (*xGrids[0])(k, j) << " ";
-	}
-	cout << '\n';
-	}
+	//cout << "====After initialization=== \n\n";
+	//for (size_t j = 0; j < (*xGrids[0]).getYsize(); j++)
+	//{
+	//for (size_t k = 0; k < (*xGrids[0]).getXsize(); k++)
+	//{
+	//cout << (*xGrids[0])(k, j) << " ";
+	//}
+	//cout << '\n';
+	//}
 
 }
 
@@ -113,7 +113,7 @@ inline void smooth(Grid* __restrict xgrd, const  Grid* __restrict fgrd, const si
 		}
 	}
 
-	cout << "====After Smoothing=== \n\n";
+	/*cout << "====After Smoothing=== \n\n";
 	for (size_t j = 0; j < (*xGrids[0]).getYsize(); j++)
 	{
 		for (size_t k = 0; k < (*xGrids[0]).getXsize(); k++)
@@ -121,7 +121,7 @@ inline void smooth(Grid* __restrict xgrd, const  Grid* __restrict fgrd, const si
 			cout << (*xGrids[0])(k, j) << " ";
 		}
 		cout << '\n';
-	}
+	}*/
 	
 }
 
