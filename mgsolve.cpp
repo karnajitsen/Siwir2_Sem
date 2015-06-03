@@ -23,6 +23,7 @@ inline void init(double hsize, const size_t level)
 	size_t je = level;
     size_t xdim = pow(2, je) + 1;
     size_t ydim = (xdim/2)+1;
+	cout << "ydim " << ydim << '\n';
     bool flag = true;
     xGrids = (Grid**) memalign(ALLIGNMENT, level*sizeof(Grid*));
     fGrids = (Grid**) memalign(ALLIGNMENT, level*sizeof(Grid*));
