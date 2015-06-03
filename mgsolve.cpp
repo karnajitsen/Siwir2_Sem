@@ -37,6 +37,16 @@ inline void init(double hsize, const size_t level)
         flag = false;
     }
    
+	cout << "====After initialization=== \n\n";
+	for (size_t j = 0; j < (*xGrids[0]).getYsize(); j++)
+	{
+	for (size_t k = 0; k < (*xGrids[0]).getXsize(); k++)
+	{
+	cout << (*xGrids[0])(k, j) << " ";
+	}
+	cout << '\n';
+	}
+
 }
 
 inline void smooth(Grid* __restrict xgrd, const  Grid* __restrict fgrd, const size_t iter)
@@ -101,6 +111,16 @@ inline void smooth(Grid* __restrict xgrd, const  Grid* __restrict fgrd, const si
 			}
 		
 		}
+	}
+
+	cout << "====After Smoothing=== \n\n";
+	for (size_t j = 0; j < (*xGrids[0]).getYsize(); j++)
+	{
+		for (size_t k = 0; k < (*xGrids[0]).getXsize(); k++)
+		{
+			cout << (*xGrids[0])(k, j) << " ";
+		}
+		cout << '\n';
 	}
 	
 }
@@ -255,13 +275,13 @@ void mgsolve(size_t level)
 	}
 	
 	//std::cout << "solution grid2";
-	for ( i = 1; newnorm > TOLERR*4; i++)
+	for ( i = 1; newnorm > TOLERR; i++)
     {
         for (size_t jl = 0; jl < level - 1; jl++)
         {
             smooth(xGrids[jl], fGrids[jl], V1);
 			restriction(xGrids[jl], fGrids[jl], fGrids[jl + 1]);
-			std::cout << i << '\n';
+			std::cout << jl << '\n';
 
         }
 
@@ -275,7 +295,7 @@ void mgsolve(size_t level)
         }
 
 		newnorm = errorNorm(xGrids[0], sGrid);
-		std::cout << "Dirichlet:: Error L2 Norm for h as 1/ = " << newnorm << "\n\n";	
+		//std::cout << "Dirichlet:: Error L2 Norm for h as 1/ = " << newnorm << "\n\n";	
 
     }
    // vcycle = i;   
