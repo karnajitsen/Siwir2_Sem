@@ -212,6 +212,15 @@ inline void interpolate(Grid * __restrict srcgrd, Grid * __restrict tgtgrd)
 
 			}
 		}
+		//size_t l = tylen * 0.5;
+#pragma omp for
+		for (size_t j = txlen / 2; j <= txlen; j++)
+		{
+			//size_t k = j * 0.5;
+			(*tgtgrd)(j, tylen) = 0.0;
+			
+		}
+
 	}
 
 }
