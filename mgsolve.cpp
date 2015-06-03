@@ -35,7 +35,7 @@ inline void init(double hsize, const size_t level)
         flag = false;
     }
 
-	/*cout << "====After initialization=== \n\n";
+	cout << "====After initialization=== \n\n";
 	for (size_t j = 0; j < (*xGrids[0]).getYsize(); j++)
 	{
 		for (size_t k = 0; k < (*xGrids[0]).getXsize(); k++)
@@ -43,7 +43,7 @@ inline void init(double hsize, const size_t level)
 		cout << (*xGrids[0])(k, j) << " ";
 	}
 	cout << '\n';
-	}*/
+	}
     
 }
 

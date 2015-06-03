@@ -15,7 +15,7 @@ class Grid
 {
 
     //__declspec(align(128))
-	__declspec(align(32)) double * __restrict data = NULL;
+	double * __restrict data = NULL;
     size_t sizeX, sizeY, ld, totLength;
     double hx, hy;
 
