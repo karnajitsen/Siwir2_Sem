@@ -89,10 +89,16 @@ public:
 	#pragma omp for 
 			for (size_t i = 1; i < y; i++)
 			{
-				//#pragma omp parallel for
-				for (size_t j = 1; j < x; j++)
+				for (size_t j = 0; j < x; j += 8)
 				{
 					data[i*ld + j] = 0.0;
+					data[i*ld + j + 1] = 0.0;
+					data[i*ld + j + 2] = 0.0;
+					data[i*ld + j + 3] = 0.0;
+					data[i*ld + j + 4] = 0.0;
+					data[i*ld + j + 5] = 0.0;
+					data[i*ld + j + 6] = 0.0;
+					data[i*ld + j + 7] = 0.0;
 				}
 			}
 		}
