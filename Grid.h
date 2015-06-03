@@ -16,7 +16,7 @@ class Grid
 
     //__declspec(align(128))
 	double * __restrict data = NULL;
-    size_t sizeX, sizeY, ld, totLength;
+    size_t sizeX, sizeY, ld;
     double hx, hy;
 
 public:
@@ -36,7 +36,7 @@ public:
         hx = _hx;
         hy = _hy;
         ld = x + LD;
-        totLength = (x - 2)*(y - 2);
+        //totLength = (x - 2)*(y - 2);
         data = (double*) memalign(ALLIGNMENT, ld*y*sizeof(double));
         //data = (double*) _aligned_malloc(ld*y*sizeof(double), ALLIGNMENT);
         if (bndrYN)
@@ -78,17 +78,24 @@ public:
 
     inline void reset()
     {
-		size_t x = sizeX -1;
+		size_t x = sizeX;
 		size_t y = sizeY ;
 #pragma omp parallel
 		{
 	#pragma omp for 
-			for (size_t i = 1; i < y; i++)
+			for (size_t i = 0; i < y; i++)
 			{
 				//#pragma omp parallel for
-				for (size_t j = 1; j < x; j++)
+				for (size_t j = 0; j < x; j+=8)
 				{
 					data[i*ld + j] = 0.0;
+					data[i*ld + j+1] = 0.0;
+					data[i*ld + j+2] = 0.0;
+					data[i*ld + j+3] = 0.0;
+					data[i*ld + j + 4] = 0.0;
+					data[i*ld + j + 5] = 0.0;
+					data[i*ld + j + 6] = 0.0;
+					data[i*ld + j + 7] = 0.0;
 				}
 			}
 		}
@@ -108,16 +115,6 @@ public:
         return data[y*ld + x];
     }
 
-    inline Grid * operator+=(const Grid * rhs)
-    {
-        return this;
-    }
-
-    inline Grid* operator-=(const Grid* rhs)
-    {
-        return this;
-    }
-
     inline size_t getXsize() const
     {
         return sizeX;
@@ -126,11 +123,6 @@ public:
     inline size_t getYsize() const
     {
         return sizeY;
-    }
-
-    inline size_t getTotLength() const
-    {
-        return totLength;
     }
 
     inline double getHx() const
