@@ -4,6 +4,7 @@
 #include <omp.h>
 #include <immintrin.h>
 #include "Grid.h"
+typedef double Real;
 #define XDOMLOW -1.0
 #define XDOMHIGH 1.0
 #define YDOMLOW -1.0
@@ -17,7 +18,7 @@ Grid ** __restrict fGrids = nullptr;
 Grid * __restrict sGrid = nullptr;
 Grid * __restrict iGrid = nullptr;
 
-void init(double hsize, const size_t level)
+void init(Real hsize, const size_t level)
 {
 
 	size_t je = level;
@@ -44,8 +45,8 @@ inline void smooth(Grid* __restrict xgrd, const  Grid* __restrict fgrd, const si
 {
 	size_t dimX = (*xgrd).getXsize()-1;
 	size_t dimY = (*xgrd).getYsize()-1;
-	double hx = (*xgrd).getHx();
-    //double hy = (*xgrd).getHy();
+	Real hx = (*xgrd).getHx();
+    //Real hy = (*xgrd).getHy();
     size_t midX = dimX >> 1;
 	size_t j,k;	
 	for (size_t i = 0; i < iter; i++)
@@ -105,9 +106,9 @@ inline void restriction(const  Grid * __restrict xgrd, const Grid *  __restrict 
 {
     size_t xlen = (*xgrd).getXsize()-1;
     size_t ylen = (*xgrd).getYsize()-1;
-    double hx = (*xgrd).getHx();
-    double	alpha = 1.0 / hx / hx;
-     double	center = (4.0 * alpha);
+    Real hx = (*xgrd).getHx();
+    Real	alpha = 1.0 / hx / hx;
+     Real	center = (4.0 * alpha);
     size_t midX = xlen >> 1;
 
     Grid tmpgrd(xlen+1, ylen+1, hx, hx, false);
@@ -210,12 +211,12 @@ inline void interpolate(Grid * __restrict srcgrd, Grid * __restrict tgtgrd)
 
 }
 
-inline double errorNorm(const Grid* __restrict  xgrd, const Grid * __restrict sgrd)
+inline Real errorNorm(const Grid* __restrict  xgrd, const Grid * __restrict sgrd)
 {
 
     size_t dimX = (*xgrd).getXsize();
     size_t dimY = (*xgrd).getYsize();
-    double r1 = 0.0,r2=0.0, r3=0.0,r4 = 0.0, sum = 0.0;
+    Real r1 = 0.0,r2=0.0, r3=0.0,r4 = 0.0, sum = 0.0;
    //size_t j,k;
 #pragma omp parallel reduction(+: sum) private(r1,r2,r3,r4)
 	{
@@ -243,8 +244,8 @@ return sqrt(sum / dimX / ((dimY << 1) - 1.0));
 void solvemg(size_t level)
 {
     size_t xdim = (1 << level) + 1, ydim;
-    double newnorm = 1.0;
-    double hsize = (XDOMHIGH - XDOMLOW) / (xdim - 1.0);
+    Real newnorm = 1.0;
+    Real hsize = (XDOMHIGH - XDOMLOW) / (xdim - 1.0);
 	size_t i = 0;    
     ydim = (xdim >> 1) + 1;
     sGrid = new Grid(xdim, ydim, hsize, hsize, true);
@@ -294,7 +295,7 @@ int main(int argc, char** argv)
 
 	
 	size_t level = atoi(argv[1]);
-    double hsize = (XDOMHIGH - XDOMLOW) / (pow(2, level));
+    Real hsize = (XDOMHIGH - XDOMLOW) / (pow(2, level));
     init(hsize, level);
 
     string your_alias = "Group_Karnajit_Ramyar";

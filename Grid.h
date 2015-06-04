@@ -2,7 +2,7 @@
 #include<iostream>
 #include <assert.h>
 #include <cmath>
-#include <stdlib.h>
+#include <stdlib.h>real
 #include <memory>
 #include <string>
 #include<malloc.h>
@@ -10,7 +10,7 @@
 #include<string.h>
 #define LD 64
 #define ALLIGNMENT 64
-
+typedef double Real;
 //#define offset 8
 using namespace std;
 //#define M_PI 3.14
@@ -18,14 +18,14 @@ class Grid
 {
 
     //__declspec(align(128))
-     double * __restrict data = NULL;
+     Real * __restrict data = NULL;
      size_t sizeX, sizeY, ld;
-     double hx, hy;
+     Real hx, hy;
 
 public:
     explicit Grid()
     {
-        data = (double*)memalign(ALLIGNMENT, 0);
+        data = (Real*)memalign(ALLIGNMENT, 0);
         sizeX = 0;
         sizeY = 0;
         hx = 0.0;
@@ -34,7 +34,7 @@ public:
 //center = 0.0;
     }
 
-    explicit Grid(const size_t x, const size_t y, const double& _hx, const double& _hy , bool bndrYN)
+    explicit Grid(const size_t x, const size_t y, const Real& _hx, const Real& _hy , bool bndrYN)
     {
         sizeX = x;
         sizeY = y;
@@ -44,18 +44,18 @@ public:
 	//alpha = 1/hx/hx;
 	//center = 4.0 * alpha; 
         ld = x + LD ;
-	// size = ld*y*sizeof(double);
+	// size = ld*y*sizeof(Real);
 	
-         data = (double*) memalign(ALLIGNMENT, ld*y*sizeof(double));
+         data = (Real*) memalign(ALLIGNMENT, ld*y*sizeof(Real));
          if (bndrYN)
         {
-            //double l = - 1.0 + (sizeX - 1.0)*hx;
+            //Real l = - 1.0 + (sizeX - 1.0)*hx;
 	#pragma omp parallel
 			{
 	#pragma omp for
 				for (int j = 0.0; (size_t)j < sizeY; j++)
 				{
-					double k = -1.0 + j*hx;
+					Real k = -1.0 + j*hx;
 					data[j] = gxy(k, -1.0);
 					data[j*ld] = gxy(-1.0, k);
 					data[(j + sizeY - 1)] = gxy(k + 1.0, -1.0);
@@ -72,29 +72,29 @@ public:
         free(data);
     }
 
-    inline double gxy(const double x, const double y)
+    inline Real gxy(const Real x, const Real y)
     {
         if (y == 0.0 && x == 0.0)
 	return 0.0;
-	//double r = sqrt(sqrt(x*x + y*y));
+	//Real r = sqrt(sqrt(x*x + y*y));
 
-		//double theta = atan2(y, x);
+		//Real theta = atan2(y, x);
         return (sqrt(sqrt(x*x + y*y)))*sin(M_PI - abs(atan2(y, x)) * 0.5);
     }
 
     inline void reset()
     {
-	memset(data,0.0,ld*sizeY*sizeof(double));
+	memset(data,0.0,ld*sizeY*sizeof(Real));
     }
 
-    inline double& operator()(const size_t x, const size_t y)
+    inline Real& operator()(const size_t x, const size_t y)
     {
         //assert(x < sizeX);
         //assert(y < sizeY);
         return data[y*ld + x];
     }
 
-    inline double& operator()(const size_t x, const size_t y) const
+    inline Real& operator()(const size_t x, const size_t y) const
     {
         //assert(x < sizeX);
         //assert(y < sizeY);
@@ -112,12 +112,12 @@ public:
         return sizeY;
     }
 
-    inline double getHx() const
+    inline Real getHx() const
     {
         return hx;
     }
 
-    inline double getHy() const
+    inline Real getHy() const
     {
         return hy;
     }
