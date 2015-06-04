@@ -7,17 +7,20 @@
 #include <string>
 #include<malloc.h>
 #include <omp.h>
-#define LD 16
-#define ALLIGNMENT 32
+#include<string.h>
+#define LD 64
+#define ALLIGNMENT 64
+
+//#define offset 8
 using namespace std;
 //#define M_PI 3.14
 class Grid
 {
 
     //__declspec(align(128))
-	double * __restrict data = NULL;
-    size_t sizeX, sizeY, ld;
-    double hx, hy;
+     double * __restrict data = NULL;
+     size_t sizeX, sizeY, ld;
+     double hx, hy;
 
 public:
     explicit Grid()
@@ -27,6 +30,8 @@ public:
         sizeY = 0;
         hx = 0.0;
         hy = 0.0;
+//alpha = 0.0;
+//center = 0.0;
     }
 
     explicit Grid(const size_t x, const size_t y, const double& _hx, const double& _hy , bool bndrYN)
@@ -35,11 +40,14 @@ public:
         sizeY = y;
         hx = _hx;
         hy = _hy;
-        ld = x + LD;
-        //totLength = (x - 2)*(y - 2);
-        data = (double*) memalign(ALLIGNMENT, ld*y*sizeof(double));
-        //data = (double*) _aligned_malloc(ld*y*sizeof(double), ALLIGNMENT);
-        if (bndrYN)
+	
+	//alpha = 1/hx/hx;
+	//center = 4.0 * alpha; 
+        ld = x + LD ;
+	// size = ld*y*sizeof(double);
+	
+         data = (double*) memalign(ALLIGNMENT, ld*y*sizeof(double));
+         if (bndrYN)
         {
             //double l = - 1.0 + (sizeX - 1.0)*hx;
 	#pragma omp parallel
@@ -50,55 +58,33 @@ public:
 					double k = -1.0 + j*hx;
 					data[j] = gxy(k, -1.0);
 					data[j*ld] = gxy(-1.0, k);
-					data[j + sizeY - 1] = gxy(k + 1.0, -1.0);
+					data[(j + sizeY - 1)] = gxy(k + 1.0, -1.0);
 					data[j * ld + (sizeX - 1)] = gxy(1.0, k);				
 
 				}
 			}
         }
 
-          //data++;
+        
     }
     ~Grid()
     {
-        //--data;
         free(data);
     }
 
     inline double gxy(const double x, const double y)
     {
-		if (y == 0.0)
-			return 0.0;
-		double r = sqrt(sqrt(x*x + y*y));
+        if (y == 0.0 && x == 0.0)
+	return 0.0;
+	//double r = sqrt(sqrt(x*x + y*y));
 
-		double theta = atan2(y, x);
-		//std::cout << "Arctan = " << 360 - abs(180 * theta / 3.14159) << '\n';
-		return r*sin(M_PI - abs(theta) * 0.5);
+		//double theta = atan2(y, x);
+        return (sqrt(sqrt(x*x + y*y)))*sin(M_PI - abs(atan2(y, x)) * 0.5);
     }
 
     inline void reset()
     {
-		size_t x = sizeX;
-		size_t y = sizeY ;
-#pragma omp parallel
-		{
-	#pragma omp for 
-			for (size_t i = 0; i < y; i++)
-			{
-				//#pragma omp parallel for
-				for (size_t j = 0; j < x; j+=8)
-				{
-					data[i*ld + j] = 0.0;
-					data[i*ld + j+1] = 0.0;
-					data[i*ld + j+2] = 0.0;
-					data[i*ld + j+3] = 0.0;
-					data[i*ld + j + 4] = 0.0;
-					data[i*ld + j + 5] = 0.0;
-					data[i*ld + j + 6] = 0.0;
-					data[i*ld + j + 7] = 0.0;
-				}
-			}
-		}
+	memset(data,0.0,ld*sizeY*sizeof(double));
     }
 
     inline double& operator()(const size_t x, const size_t y)
@@ -115,9 +101,10 @@ public:
         return data[y*ld + x];
     }
 
+
     inline size_t getXsize() const
     {
-        return sizeX;
+         return sizeX;
     }
 
     inline size_t getYsize() const
